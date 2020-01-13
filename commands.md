@@ -5,17 +5,18 @@
 | ---------- | -------------------------- |
 | (Argument) | This argument is optional. |
 
+## JVN Commands
+| Commands | Arguments         | Description                            |
+| -------- | ----------------- | -------------------------------------- |
+| Gear     | Motor, Gear Ratio | Provides statistics about a drivetrain |
+
 ## Moderation
 | Commands | Arguments      | Description                                  |
 | -------- | -------------- | -------------------------------------------- |
 | Ban      | Member, (Text) | Bans someone in the guild for a given reason |
 | Kick     | Member, (Text) | Kick someone in the guild for a given reason |
 | Unban    | User, (Text)   | Unbans someone in the guild                  |
-
-## Moderation Tools
-| Commands | Arguments | Description             |
-| -------- | --------- | ----------------------- |
-|          | <none>    | No Description Provider |
+| Warn     | User, (Text)   | Warn an user                                 |
 
 ## Utility
 | Commands               | Arguments   | Description                                                                                |

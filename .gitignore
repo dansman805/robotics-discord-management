@@ -3,6 +3,7 @@
 
 # Ignore Gradle build output directory
 build
+out
 
 src/main/kotlin/com/github/dansman805/discordbot/Config.kt
 out/production/classes/com/github/dansman805/discordbot/ConfigKt.class

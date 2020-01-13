@@ -123,16 +123,16 @@ data class FRCTeam(
 }
 
 open class TeamNumberArg : ArgumentType<Int>() {
+    companion object : TeamNumberArg()
+
     override val name = "Team Number"
     override val examples = arrayListOf("11115")
-
     override val consumptionType = ConsumptionType.Single
+
     override fun convert(arg: String, args: List<String>, event: CommandEvent<*>): ArgumentResult<Int> {
         val int = arg.toIntOrNull() ?: return ArgumentResult.Error("Expected a team number, got $arg")
         return ArgumentResult.Success(int)
     }
-
-    companion object : TeamNumberArg()
 }
 
 @ImplicitReflectionSerializer
