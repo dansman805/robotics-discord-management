@@ -9,6 +9,7 @@
 | Commands | Arguments         | Description                            |
 | -------- | ----------------- | -------------------------------------- |
 | Gear     | Motor, Gear Ratio | Provides statistics about a drivetrain |
+| JVN      | <none>            | Returns URL for FTC JVN calculator     |
 
 ## Moderation
 | Commands | Arguments      | Description                                  |

@@ -109,6 +109,14 @@ open class GearRatioArg : ArgumentType<Double>() {
 @ImplicitReflectionSerializer
 @CommandSet("JVN Commands")
 fun jvnCommands() = commands {
+    command("JVN") {
+        description = "Returns URL for FTC JVN calculator"
+        execute {
+            it.respond(
+                    "https://www.chiefdelphi.com/t/paper-ftc-bw-jvns-mechanical-design-calculator-revised-for-ftc/160196")
+        }
+    }
+
     command("Gear") {
         description = "Provides statistics about a drivetrain"
 
