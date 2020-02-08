@@ -1,5 +1,6 @@
 package com.github.dansman805.discordbot.commands
 
+import com.github.dansman805.discordbot.modLogChannelID
 import kotlinx.serialization.ImplicitReflectionSerializer
 import me.aberrantfox.kjdautils.api.dsl.command.CommandEvent
 import me.aberrantfox.kjdautils.api.dsl.command.CommandSet
@@ -23,8 +24,8 @@ data class Motor(val rpm: Double, val stallTorque: Double, val stallCurrent: Dou
                  val power: Double) {
     fun gear(ratio: Double): Motor = this.copy(rpm = this.rpm*ratio, stallTorque = this.stallTorque/ratio)
 
-    fun genEmbed() = embed {
-        title = "Geared Motor"
+    fun genEmbed(embedTitle: String="Motor Statistics") = embed {
+        title = embedTitle
 
         field {
             name = "RPM"
@@ -71,8 +72,8 @@ open class MotorArg : ArgumentType<Motor>() {
 
     override val name = "Motor"
     override val consumptionType = ConsumptionType.Single
-    override val examples = arrayListOf("Stock393", "HighSpeed393", "NeveRest60", "NeveRest40", "NeveRest20",
-            "NeveRestBare", "HDHex40")
+    override val examples = arrayListOf("[Stock393, HighSpeed393, NeveRest60, NeveRest40, NeveRest20, NeveRestBare, " +
+            "or HDHex40]")
 
     override fun convert(arg: String, args: List<String>, event: CommandEvent<*>): ArgumentResult<Motor> {
         return when (arg) {
@@ -117,13 +118,21 @@ fun jvnCommands() = commands {
         }
     }
 
+    command("Motor") {
+        description = "Provides statistics about a motor"
+
+        execute(MotorArg) {
+            it.respond(it.args.first.genEmbed())
+        }
+    }
+
     command("Gear") {
-        description = "Provides statistics about a drivetrain"
+        description = "Provides statistics about a motor when geared"
 
         execute(MotorArg, GearRatioArg) {
             val motor = it.args.first.gear(it.args.second)
 
-            it.respond(motor.genEmbed())
+            it.respond(motor.genEmbed("Geared Motor Statistics"))
         }
     }
 }

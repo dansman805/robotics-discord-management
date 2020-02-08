@@ -6,10 +6,11 @@
 | (Argument) | This argument is optional. |
 
 ## JVN Commands
-| Commands | Arguments         | Description                            |
-| -------- | ----------------- | -------------------------------------- |
-| Gear     | Motor, Gear Ratio | Provides statistics about a drivetrain |
-| JVN      | <none>            | Returns URL for FTC JVN calculator     |
+| Commands | Arguments         | Description                                   |
+| -------- | ----------------- | --------------------------------------------- |
+| Gear     | Motor, Gear Ratio | Provides statistics about a motor when geared |
+| JVN      | <none>            | Returns URL for FTC JVN calculator            |
+| Motor    | Motor             | Provides statistics about a motor             |
 
 ## Moderation
 | Commands | Arguments      | Description                                  |
