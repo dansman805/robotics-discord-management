@@ -11,15 +11,17 @@ import com.github.kittinunf.fuel.serialization.responseObject
 import kotlinx.serialization.json.Json
 import me.aberrantfox.kjdautils.api.annotation.Service
 
+@kotlinx.serialization.ImplicitReflectionSerializer
+@kotlinx.serialization.UnstableDefault
 @Service
 class TeamService {
     fun getFTCTeam(number: Int): FTCTeam {
-        val (request, response, result) = "https://theorangealliance.org/api/team/${number}"
+        val result = "https://theorangealliance.org/api/team/${number}"
                 .httpGet()
                 .header("Content-Type", "application/json")
                 .header("X-TOA-Key", orangeAllianceKey)
                 .header("X-Application-Origin", appName)
-                .responseString()
+                .responseString().third
 
         val json = Json.nonstrict
 
@@ -29,13 +31,12 @@ class TeamService {
         )
     }
 
-    @kotlinx.serialization.ImplicitReflectionSerializer
     fun getFRCTeam(number: Int): FRCTeam {
-        val (request, response, result) = Fuel.get("https://www.thebluealliance.com/api/v3/team/frc${number}")
+        val result = Fuel.get("https://www.thebluealliance.com/api/v3/team/frc${number}")
                 .header("Content-Type", "application/json")
                 .header("X-TBA-Auth-Key", blueAllianceKey)
                 .header("User-Agent", appName)
-                .responseObject<FRCTeam>(json = Json.nonstrict)
+                .responseObject<FRCTeam>(json = Json.nonstrict).third
 
         return  result.get()
     }

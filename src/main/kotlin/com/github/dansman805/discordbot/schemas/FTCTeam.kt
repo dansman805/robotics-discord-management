@@ -45,7 +45,7 @@ data class FTCTeam(val team_key: String?,
 
         return e.build()
     }
-    
+
     companion object {
         fun yearToSeason(year: Int): String = when(year) {
             2020 -> "2019-2020: Skystone"

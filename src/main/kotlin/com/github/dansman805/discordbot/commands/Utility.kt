@@ -2,6 +2,7 @@ package com.github.dansman805.discordbot.commands
 
 import com.github.dansman805.discordbot.appName
 import com.github.dansman805.discordbot.blueAllianceKey
+import com.github.dansman805.discordbot.discordToken
 import com.github.dansman805.discordbot.orangeAllianceKey
 import com.github.dansman805.discordbot.schemas.FRCTeam
 import com.github.dansman805.discordbot.schemas.FTCTeam
@@ -11,12 +12,17 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.responseObject
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.Json
+import me.aberrantfox.kjdautils.api.dsl.Precondition
 import me.aberrantfox.kjdautils.api.dsl.command.CommandEvent
 import me.aberrantfox.kjdautils.api.dsl.command.CommandSet
 import me.aberrantfox.kjdautils.api.dsl.command.commands
-import me.aberrantfox.kjdautils.internal.command.ArgumentResult
-import me.aberrantfox.kjdautils.internal.command.ArgumentType
-import me.aberrantfox.kjdautils.internal.command.ConsumptionType
+import me.aberrantfox.kjdautils.api.dsl.precondition
+import me.aberrantfox.kjdautils.extensions.jda.getHighestRole
+import me.aberrantfox.kjdautils.extensions.jda.toMember
+import me.aberrantfox.kjdautils.internal.arguments.SentenceArg
+import me.aberrantfox.kjdautils.internal.command.*
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.exceptions.HierarchyException
 import java.lang.Exception
 
 
@@ -34,14 +40,55 @@ open class TeamNumberArg : ArgumentType<Int>() {
     }
 }
 
-@ImplicitReflectionSerializer
+@Precondition
+fun hasNickPerms() = precondition {
+    if (it.commandStruct.commandName != "SetNickname") {
+        return@precondition Pass
+    }
+
+    if (it.author.toMember(it.guild!!)?.hasPermission(Permission.NICKNAME_CHANGE) == true) {
+        return@precondition Pass
+    }
+    else {
+        return@precondition Fail("You do not have permissions to set your own nickname!")
+    }
+}
+
 @CommandSet("Utility")
+@ImplicitReflectionSerializer
+@kotlinx.serialization.UnstableDefault
 fun utilityCommands(teamService: TeamService) = commands {
     command("Ping") {
         description = "Responds with Pong! (As well as the server name, and the time it takes the bot to respond)"
         execute {
             it.respond("""Pong! We're in the **${it.guild?.name}** server.
                 |Took ${it.channel.jda.restPing.complete()} ms to respond.""".trimMargin())
+        }
+    }
+
+    command("SetNickname", "Nickname", "Nick") {
+        description = "Allows a member to change their nickname."
+        execute(SentenceArg) {
+            val nickToChangeTo = it.args.first
+            val truncatedNick =
+                    if (nickToChangeTo.length > 32) nickToChangeTo.substring(0..31)
+                    else nickToChangeTo
+
+            try {
+                it.message.member?.modifyNickname(truncatedNick)?.submit()?.get()
+            }
+            catch (e: HierarchyException) {
+                it.respond("Your top role is the same as or higher than mine!")
+                return@execute
+            }
+
+            it.respond("Nick succesfully changed to $truncatedNick")
+
+            if (nickToChangeTo.length > 32) {
+                it.respond("Warning: truncated nickname to 32 characters.")
+            }
+
+
         }
     }
 
