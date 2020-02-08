@@ -2,6 +2,8 @@ package com.github.dansman805.discordbot.schemas
 
 import kotlinx.serialization.Serializable
 import me.aberrantfox.kjdautils.api.dsl.embed
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.MessageEmbed
 import java.awt.Color
 
 @Serializable
@@ -26,35 +28,20 @@ data class FRCTeam(
         val home_championship: Map<String?, String?>?) {
     fun location() = "$city, $state_prov $postal_code, $country"
 
-    fun genEmbed() = embed {
-        title = "FIRST®️ Robotics Competition Team $team_number"
-        color = Color(0x36469C)
-        thumbnail = "https://frcavatars.herokuapp.com/get_image?team=$team_number"
+    fun genEmbed(): MessageEmbed {
+        val e = EmbedBuilder()
 
-        field {
-            name = "Name"
-            value = nickname
-            inline = true
-        }
+        e.setTitle("FIRST®️ Robotics Competition Team $team_number",
+                "https://www.thebluealliance.com/team/$team_number")
+        e.setColor(0x36469C)
+        e.setThumbnail("https://frcavatars.herokuapp.com/get_image?team=$team_number")
 
-        field {
-            name = "Rookie Year"
-            value = if (rookie_year != null) yearToSeason(rookie_year) else "?"
-            inline = true
-        }
+        e.addField("Name", nickname, true)
+        e.addField("Rookie Year", if (rookie_year != null) yearToSeason(rookie_year) else "?", true)
+        e.addField("Location", location(), true)
+        e.addField("Website", website ?: "n/a", false)
 
-        field {
-            name = "Location"
-            value = location()
-            inline = true
-        }
-
-        field {
-            name = "Website"
-            value = website ?: "n/a"
-        }
-
-        description = "https://thebluealliance.com/team/$team_number"
+        return e.build()
     }
 
     companion object {

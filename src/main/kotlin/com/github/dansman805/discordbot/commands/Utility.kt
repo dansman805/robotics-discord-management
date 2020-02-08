@@ -49,8 +49,6 @@ fun utilityCommands(teamService: TeamService) = commands {
         description = "Provides data on a given FTC team from The Orange Alliance"
 
         execute (TeamNumberArg) { event ->
-
-
             try {
                 event.respond(
                         teamService.getFTCTeam(event.args.component1()).genEmbed()

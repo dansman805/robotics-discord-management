@@ -2,6 +2,9 @@ package com.github.dansman805.discordbot.schemas
 
 import kotlinx.serialization.Serializable
 import me.aberrantfox.kjdautils.api.dsl.embed
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.entities.MessageEmbed
 import java.awt.Color
 
 @Serializable
@@ -26,43 +29,23 @@ data class FTCTeam(val team_key: String?,
         else -> yearToSeason("20${last_active.toString().substring(2..3)}".toInt())
     }
 
-    fun genEmbed() = embed {
-        title = "FIRST®️ Tech Challenge Team $team_number"
-        color = Color(0xf89808)
-        thumbnail = "https://raw.githubusercontent.com/orange-alliance/the-orange-alliance/master/src/assets/imgs/icon512.png"
+    fun genEmbed(): MessageEmbed {
+        val e = EmbedBuilder()
 
-        field {
-            name = "Name"
-            value = team_name_short
-            inline = true
-        }
+        e.setTitle("FIRST®️ Tech Challenge Team $team_number",
+                "https://www.thebluealliance.com/team/$team_number")
+        e.setColor(0xf89808)
+        e.setThumbnail("https://raw.githubusercontent.com/orange-alliance/the-orange-alliance/master/src/assets/imgs/icon512.png")
 
-        field {
-            name = "Rookie Season"
-            value = if (rookie_year != null) yearToSeason(rookie_year + 1) else "?"
-            inline = true
-        }
+        e.addField("Name", team_name_short, true)
+        e.addField("Rookie Year", if (rookie_year != null) yearToSeason(rookie_year + 1) else "?", true)
+        e.addField("Last Active", lastActive(), true)
+        e.addField("Location", location(), true)
+        e.addField("Website", website ?: "n/a", false)
 
-        field {
-            name = "Last Active Season"
-            value = lastActive()
-            inline = true
-        }
-
-        field {
-            name = "Location"
-            value = location()
-            inline = true
-        }
-
-        field {
-            name = "Website"
-            value = website ?: "n/a"
-        }
-
-        description = "https://theorangealliance.org/teams/$team_number"
+        return e.build()
     }
-
+    
     companion object {
         fun yearToSeason(year: Int): String = when(year) {
             2020 -> "2019-2020: Skystone"
