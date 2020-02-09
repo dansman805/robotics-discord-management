@@ -18,7 +18,7 @@
 | Ban      | Member, (Text) | Bans someone in the guild for a given reason |
 | Kick     | Member, (Text) | Kick someone in the guild for a given reason |
 | Unban    | User, (Text)   | Unbans someone in the guild                  |
-| Warn     | User, (Text)   | Warn an user                                 |
+| Warn     | User, Text     | Warn an user                                 |
 
 ## Utility
 | Commands                    | Arguments   | Description                                                                                |

@@ -75,7 +75,7 @@ fun utilityCommands(teamService: TeamService) = commands {
                     else nickToChangeTo
 
             try {
-                it.message.member?.modifyNickname(truncatedNick)?.submit()?.get()
+                it.message.member?.modifyNickname(truncatedNick)?.complete()
             }
             catch (e: HierarchyException) {
                 it.respond("Your top role is the same as or higher than mine!")

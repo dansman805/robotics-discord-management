@@ -53,7 +53,7 @@ fun modLog(actor: Member, action: String, target: User, reason: String, embedCol
 
     target.sendPrivateMessage(modLogEmbed)
 
-    actor.guild.getTextChannelById(modLogChannelID)?.sendMessage(modLogEmbed)
+    actor.guild.getTextChannelById(modLogChannelID)?.sendMessage(modLogEmbed)?.complete()
 }
 
 @Precondition
@@ -78,7 +78,8 @@ fun modCommands() = commands {
         description = "Bans someone in the guild for a given reason"
 
         execute(MemberArg, reasonArg) {
-            it.guild?.ban(it.args.first, 0)
+            modLog(it.author.toMember(it.guild!!)!!, "Banned", it.args.first.user, it.args.second)
+            it.guild?.ban(it.args.first, 0)?.complete()
         }
     }
 
@@ -86,7 +87,8 @@ fun modCommands() = commands {
         description = "Unbans someone in the guild"
 
         execute(UserArg, reasonArg) {
-            it.guild?.unban(it.args.first)
+            modLog(it.author.toMember(it.guild!!)!!, "Unbanned", it.args.first, it.args.second)
+            it.guild?.unban(it.args.first)?.complete()
         }
     }
 
@@ -94,14 +96,15 @@ fun modCommands() = commands {
         description = "Kick someone in the guild for a given reason"
 
         execute(MemberArg, reasonArg) {
-            it.guild?.kick(it.args.first, it.args.second)
+            modLog(it.author.toMember(it.guild!!)!!, "Kicked", it.args.first.user, it.args.second)
+            it.guild?.kick(it.args.first, it.args.second)?.complete()
         }
     }
 
     command("Warn") {
         description = "Warn an user"
 
-        execute(UserArg, reasonArg) {
+        execute(UserArg, SentenceArg) {
             modLog(it.author.toMember(it.guild!!)!!, "Warned", it.args.first, it.args.second)
         }
     }
