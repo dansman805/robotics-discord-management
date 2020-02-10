@@ -16,7 +16,7 @@ import me.aberrantfox.kjdautils.api.annotation.Service
 @Service
 class TeamService {
     fun getFTCTeam(number: Int): FTCTeam {
-        val result = "https://theorangealliance.org/api/team/${number}"
+        val result = "https://theorangealliance.org/api/team/$number"
                 .httpGet()
                 .header("Content-Type", "application/json")
                 .header("X-TOA-Key", orangeAllianceKey)
@@ -32,7 +32,7 @@ class TeamService {
     }
 
     fun getFRCTeam(number: Int): FRCTeam {
-        val result = Fuel.get("https://www.thebluealliance.com/api/v3/team/frc${number}")
+        val result = Fuel.get("https://www.thebluealliance.com/api/v3/team/frc$number")
                 .header("Content-Type", "application/json")
                 .header("X-TBA-Auth-Key", blueAllianceKey)
                 .header("User-Agent", appName)

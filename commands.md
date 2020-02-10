@@ -5,6 +5,12 @@
 | ---------- | -------------------------- |
 | (Argument) | This argument is optional. |
 
+## Info
+| Commands                                                                 | Arguments | Description                                       |
+| ------------------------------------------------------------------------ | --------- | ------------------------------------------------- |
+| Guild, Server, GuildInformation, ServerInformation, GuildInfo, ServoInfo | <none>    | Retrieve information about this guild.            |
+| Member, UserInformation, UserInfo, User                                  | Member    | Retrieve information about a member of the guild. |
+
 ## JVN Commands
 | Commands | Arguments         | Description                                   |
 | -------- | ----------------- | --------------------------------------------- |

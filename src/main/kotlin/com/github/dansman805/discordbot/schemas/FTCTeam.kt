@@ -38,7 +38,7 @@ data class FTCTeam(val team_key: String?,
         e.setThumbnail("https://raw.githubusercontent.com/orange-alliance/the-orange-alliance/master/src/assets/imgs/icon512.png")
 
         e.addField("Name", team_name_short, true)
-        e.addField("Rookie Year", if (rookie_year != null) yearToSeason(rookie_year + 1) else "?", true)
+        e.addField("Rookie Season", if (rookie_year != null) yearToSeason(rookie_year + 1) else "?", true)
         e.addField("Last Active", lastActive(), true)
         e.addField("Location", location(), true)
         e.addField("Website", website ?: "n/a", false)
