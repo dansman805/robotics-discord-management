@@ -2,9 +2,9 @@ package com.github.dansman805.discordbot.services
 
 import com.github.dansman805.discordbot.appName
 import com.github.dansman805.discordbot.blueAllianceKey
+import com.github.dansman805.discordbot.dataclasses.FRCTeam
+import com.github.dansman805.discordbot.dataclasses.FTCTeam
 import com.github.dansman805.discordbot.orangeAllianceKey
-import com.github.dansman805.discordbot.schemas.FRCTeam
-import com.github.dansman805.discordbot.schemas.FTCTeam
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.responseObject
@@ -38,6 +38,6 @@ class TeamService {
                 .header("User-Agent", appName)
                 .responseObject<FRCTeam>(json = Json.nonstrict).third
 
-        return  result.get()
+        return result.get()
     }
 }

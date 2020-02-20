@@ -1,10 +1,8 @@
-package com.github.dansman805.discordbot.schemas
+package com.github.dansman805.discordbot.dataclasses
 
 import kotlinx.serialization.Serializable
-import me.aberrantfox.kjdautils.api.dsl.embed
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
-import java.awt.Color
 
 @Serializable
 data class FRCTeam(
@@ -45,7 +43,7 @@ data class FRCTeam(
     }
 
     companion object {
-        fun yearToSeason(year: Int): String = when(year) {
+        fun yearToSeason(year: Int): String = when (year) {
             2020 -> "2020: Infinite Recharge"
             2019 -> "2019: Destination: Deep Space"
             2018 -> "2018: FIRST Power Up"

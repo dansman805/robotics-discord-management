@@ -2,17 +2,16 @@ package com.github.dansman805.discordbot.commands
 
 import com.github.dansman805.discordbot.editDeleteChannelID
 import com.github.dansman805.discordbot.modLogChannelID
+import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.annotation.Precondition
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.api.dsl.embed
-import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.extensions.jda.fullName
 import me.aberrantfox.kjdautils.extensions.jda.sendPrivateMessage
 import me.aberrantfox.kjdautils.extensions.jda.toMember
 import me.aberrantfox.kjdautils.internal.arguments.MemberArg
 import me.aberrantfox.kjdautils.internal.arguments.SentenceArg
 import me.aberrantfox.kjdautils.internal.arguments.UserArg
-import me.aberrantfox.kjdautils.internal.arguments.WordArg
 import me.aberrantfox.kjdautils.internal.command.Fail
 import me.aberrantfox.kjdautils.internal.command.Pass
 import me.aberrantfox.kjdautils.internal.command.precondition
@@ -23,7 +22,6 @@ import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.awt.Color
-import java.lang.Exception
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -62,7 +60,7 @@ fun modLog(actor: Member, action: String, target: User, reason: String, embedCol
 
 @Precondition
 fun isMod() = precondition {
-    if (it.container[it.commandStruct.commandName]?.category != modCommandCategoryName ) {
+    if (it.container[it.commandStruct.commandName]?.category != modCommandCategoryName) {
         return@precondition Pass
     }
 
@@ -114,7 +112,7 @@ fun modCommands() = commands {
     }
 }
 
-class EditDeleteReciever() : ListenerAdapter() {
+class EditDeleteReciever : ListenerAdapter() {
     override fun onMessageDelete(event: MessageDeleteEvent) {
         val message = event.channel.retrieveMessageById(event.messageIdLong).complete()
 

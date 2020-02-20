@@ -1,8 +1,6 @@
 package com.github.dansman805.discordbot
 
-import me.aberrantfox.kjdautils.api.annotation.Data
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatterBuilder
 
 fun readEnvVariable(envVariable: String) =
         System.getenv(envVariable) ?: throw Exception("No $envVariable environment variable found")

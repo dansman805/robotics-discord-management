@@ -11,11 +11,10 @@
 | Guild, Server, GuildInformation, ServerInformation, GuildInfo, ServoInfo | <none>    | Retrieve information about this guild.            |
 | Member, UserInformation, UserInfo, User                                  | Member    | Retrieve information about a member of the guild. |
 
-## JVN Commands
+## Mechanism Analysis
 | Commands | Arguments         | Description                                   |
 | -------- | ----------------- | --------------------------------------------- |
 | Gear     | Motor, Gear Ratio | Provides statistics about a motor when geared |
-| JVN      | <none>            | Returns URL for FTC JVN calculator            |
 | Motor    | Motor             | Provides statistics about a motor             |
 
 ## Moderation

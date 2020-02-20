@@ -1,11 +1,8 @@
-package com.github.dansman805.discordbot.schemas
+package com.github.dansman805.discordbot.dataclasses
 
 import kotlinx.serialization.Serializable
-import me.aberrantfox.kjdautils.api.dsl.embed
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
-import java.awt.Color
 
 @Serializable
 data class FTCTeam(val team_key: String?,
@@ -47,7 +44,7 @@ data class FTCTeam(val team_key: String?,
     }
 
     companion object {
-        fun yearToSeason(year: Int): String = when(year) {
+        fun yearToSeason(year: Int): String = when (year) {
             2020 -> "2019-2020: Skystone"
             2019 -> "2018-2019: Rover Ruckus"
             2018 -> "2017-2018: Relic Recovery"
