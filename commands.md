@@ -27,11 +27,11 @@
 | Warn     | User, Text     | Warn an user                                 |
 
 ## Utility
-| Commands                    | Arguments   | Description                                                                                |
-| --------------------------- | ----------- | ------------------------------------------------------------------------------------------ |
-| Help                        | (Command)   | Display a help menu.                                                                       |
-| Ping                        | <none>      | Responds with Pong! (As well as the server name, and the time it takes the bot to respond) |
-| SetNickname, Nickname, Nick | Text        | Allows a member to change their nickname.                                                  |
-| TheBlueAlliance, TBA        | Team Number | Provides data on a given FRC team from The Blue Alliance                                   |
-| TheOrangeAlliance, TOA      | Team Number | Provides data on a given FTC team from The Orange Alliance                                 |
+| Commands                             | Arguments   | Description                                                                                |
+| ------------------------------------ | ----------- | ------------------------------------------------------------------------------------------ |
+| Help                                 | (Command)   | Display a help menu.                                                                       |
+| Ping                                 | <none>      | Responds with Pong! (As well as the server name, and the time it takes the bot to respond) |
+| SetNickname, SetNick, Nickname, Nick | Text        | Allows a member to change their nickname.                                                  |
+| TheBlueAlliance, TBA                 | Team Number | Provides data on a given FRC team from The Blue Alliance                                   |
+| TheOrangeAlliance, TOA               | Team Number | Provides data on a given FTC team from The Orange Alliance                                 |
 

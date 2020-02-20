@@ -1,11 +1,11 @@
 package com.github.dansman805.discordbot.commands
 
+import com.github.dansman805.discordbot.editDeleteChannelID
 import com.github.dansman805.discordbot.modLogChannelID
-import me.aberrantfox.kjdautils.api.dsl.Precondition
-import me.aberrantfox.kjdautils.api.dsl.command.CommandSet
+import me.aberrantfox.kjdautils.api.annotation.Precondition
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.api.dsl.embed
-import me.aberrantfox.kjdautils.api.dsl.precondition
+import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.extensions.jda.fullName
 import me.aberrantfox.kjdautils.extensions.jda.sendPrivateMessage
 import me.aberrantfox.kjdautils.extensions.jda.toMember
@@ -15,9 +15,13 @@ import me.aberrantfox.kjdautils.internal.arguments.UserArg
 import me.aberrantfox.kjdautils.internal.arguments.WordArg
 import me.aberrantfox.kjdautils.internal.command.Fail
 import me.aberrantfox.kjdautils.internal.command.Pass
+import me.aberrantfox.kjdautils.internal.command.precondition
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.awt.Color
 import java.lang.Exception
 import java.time.LocalDateTime
@@ -107,5 +111,31 @@ fun modCommands() = commands {
         execute(UserArg, SentenceArg) {
             modLog(it.author.toMember(it.guild!!)!!, "Warned", it.args.first, it.args.second)
         }
+    }
+}
+
+class EditDeleteReciever() : ListenerAdapter() {
+    override fun onMessageDelete(event: MessageDeleteEvent) {
+        val message = event.channel.retrieveMessageById(event.messageIdLong).complete()
+
+        println(message.contentRaw)
+
+        event.jda.getTextChannelById(editDeleteChannelID)?.sendMessage(
+                embed {
+                    title = "Message Deletion"
+                    color = Color(0xff0000)
+                    timeStamp = LocalDateTime.now()
+
+
+                    field {
+                        name = "Author"
+                        value = message.author.fullName()
+                    }
+                }
+        )?.complete()
+    }
+
+    override fun onMessageUpdate(event: MessageUpdateEvent) {
+
     }
 }

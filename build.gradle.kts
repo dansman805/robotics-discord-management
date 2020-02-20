@@ -30,7 +30,7 @@ dependencies {
     // Use the Kotlin JUnit integration
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 
-    implementation("com.gitlab.aberrantfox:KUtils:0.13.0")
+    implementation("com.gitlab.aberrantfox:KUtils:0.14.0")
 
     val fuelVersion = "2.2.0"
 
@@ -38,6 +38,10 @@ dependencies {
     implementation("com.github.kittinunf.fuel:fuel-kotlinx-serialization:$fuelVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0")
+
+    
+
+
 }
 
 application {

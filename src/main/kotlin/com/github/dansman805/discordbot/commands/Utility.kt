@@ -12,11 +12,10 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.responseObject
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.Json
-import me.aberrantfox.kjdautils.api.dsl.Precondition
 import me.aberrantfox.kjdautils.api.dsl.command.CommandEvent
-import me.aberrantfox.kjdautils.api.dsl.command.CommandSet
+import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.dsl.command.commands
-import me.aberrantfox.kjdautils.api.dsl.precondition
+import me.aberrantfox.kjdautils.api.annotation.Precondition
 import me.aberrantfox.kjdautils.extensions.jda.getHighestRole
 import me.aberrantfox.kjdautils.extensions.jda.toMember
 import me.aberrantfox.kjdautils.internal.arguments.SentenceArg
@@ -66,7 +65,7 @@ fun utilityCommands(teamService: TeamService) = commands {
         }
     }
 
-    command("SetNickname", "Nickname", "Nick") {
+    command("SetNickname", "SetNick", "Nickname", "Nick") {
         description = "Allows a member to change their nickname."
         execute(SentenceArg) {
             val nickToChangeTo = it.args.first

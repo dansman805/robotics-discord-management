@@ -14,5 +14,7 @@ val blueAllianceKey: String = readEnvVariable("TBA_KEY")
 
 val appName: String = readEnvVariable("BOT_NAME")
 val modLogChannelID: Long = readEnvVariable("MOD_LOG_CHANNEL_ID").toLong()
+val editDeleteChannelID: Long = readEnvVariable("EDIT_DELETE_CHANNEL_ID").toLong()
+
 
 val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("u-M-d H:m:s.S")

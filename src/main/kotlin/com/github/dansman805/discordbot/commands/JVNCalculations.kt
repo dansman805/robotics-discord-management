@@ -2,8 +2,8 @@ package com.github.dansman805.discordbot.commands
 
 import com.github.dansman805.discordbot.modLogChannelID
 import kotlinx.serialization.ImplicitReflectionSerializer
+import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.dsl.command.CommandEvent
-import me.aberrantfox.kjdautils.api.dsl.command.CommandSet
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.api.dsl.embed
 import me.aberrantfox.kjdautils.internal.command.ArgumentResult
