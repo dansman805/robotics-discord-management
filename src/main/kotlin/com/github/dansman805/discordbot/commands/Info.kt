@@ -1,5 +1,6 @@
 package com.github.dansman805.discordbot.commands
 
+import com.github.dansman805.discordbot.extensions.toEmbed
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.internal.arguments.MemberArg
@@ -15,7 +16,7 @@ fun infoCommands() = commands {
 
     }
 
-    command("Guild", "Server", "GuildInformation", "ServerInformation", "GuildInfo", "ServoInfo") {
+    command("Guild", "Server", "GuildInformation", "ServerInformation", "GuildInfo", "ServerInfo") {
         description = "Retrieve information about this guild."
 
         execute {

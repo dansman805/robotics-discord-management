@@ -1,6 +1,7 @@
 package com.github.dansman805.discordbot.commands
 
 import com.github.dansman805.discordbot.services.TeamService
+import com.github.dansman805.discordbot.services.WikipediaSummaryService
 import kotlinx.serialization.ImplicitReflectionSerializer
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.annotation.Precondition
@@ -42,7 +43,7 @@ fun hasNickPerms() = precondition {
 @CommandSet("Utility")
 @ImplicitReflectionSerializer
 @kotlinx.serialization.UnstableDefault
-fun utilityCommands(teamService: TeamService) = commands {
+fun utilityCommands(teamService: TeamService, wikipediaSummaryService: WikipediaSummaryService) = commands {
     command("Ping") {
         description = "Responds with Pong! (As well as the server name, and the time it takes the bot to respond)"
         execute {
@@ -102,6 +103,18 @@ fun utilityCommands(teamService: TeamService) = commands {
             } catch (e: Exception) {
                 event.respond("This team does not have any data on it yet, or it does not exist!")
             }
+        }
+    }
+
+    command("Wikipedia", "W") {
+        description = "Provides the Wikipedia summary on a given topic"
+
+        execute(SentenceArg) {
+            val summary = wikipediaSummaryService.getSummary(it.args.first)
+
+
+            it.respond(summary.toEmbed())
+
         }
     }
 }
