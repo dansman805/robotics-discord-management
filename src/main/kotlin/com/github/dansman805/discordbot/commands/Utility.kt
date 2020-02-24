@@ -106,7 +106,7 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
         }
     }
 
-    command("Wikipedia", "W") {
+    command("Wikipedia", "Wiki", "W") {
         description = "Provides the Wikipedia summary on a given topic"
 
         execute(SentenceArg) {
