@@ -113,7 +113,13 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
             val summary = wikipediaSummaryService.getSummary(it.args.first)
 
 
-            it.respond(summary.toEmbed())
+            if (summary?.toEmbed() != null) {
+                it.respond(summary.toEmbed())
+            }
+            else {
+                it.respond("No Wikipedia article found!")
+            }
+
 
         }
     }
