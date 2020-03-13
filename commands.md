@@ -5,6 +5,11 @@
 | ---------- | -------------------------- |
 | (Argument) | This argument is optional. |
 
+## Fun
+| Commands | Arguments | Description                        |
+| -------- | --------- | ---------------------------------- |
+| Fight    | Member    | Start a fight with another member. |
+
 ## Info
 | Commands                                                                  | Arguments | Description                                       |
 | ------------------------------------------------------------------------- | --------- | ------------------------------------------------- |
