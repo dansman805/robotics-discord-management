@@ -1,12 +1,19 @@
 package com.github.dansman805.discordbot.commands
 
+import com.github.dansman805.discordbot.dataclasses.MembershipTimeRole
 import com.github.dansman805.discordbot.editDeleteChannelID
+import com.github.dansman805.discordbot.memberShipRoles
 import com.github.dansman805.discordbot.modLogChannelID
+import com.google.common.eventbus.Subscribe
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.annotation.Precondition
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.api.dsl.embed
 import me.aberrantfox.kjdautils.extensions.jda.fullName
+import me.aberrantfox.kjdautils.extensions.jda.getRoleByName
 import me.aberrantfox.kjdautils.extensions.jda.sendPrivateMessage
 import me.aberrantfox.kjdautils.extensions.jda.toMember
 import me.aberrantfox.kjdautils.internal.arguments.MemberArg
@@ -17,13 +24,18 @@ import me.aberrantfox.kjdautils.internal.command.Pass
 import me.aberrantfox.kjdautils.internal.command.precondition
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.managers.RoleManager
 import java.awt.Color
+import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Period
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 const val modCommandCategoryName = "Moderation"
 
@@ -110,13 +122,88 @@ fun modCommands() = commands {
             modLog(it.author.toMember(it.guild!!)!!, "Warned", it.args.first, it.args.second)
         }
     }
+
+    command("DeleteRoles") {
+        description = "Delete's the time-based roles"
+        requiresGuild = true
+
+        execute {
+            for (roleConfig in memberShipRoles) {
+                it.guild!!.getRoleByName(roleConfig.name)!!.delete()
+                        .reason("Requested by: ${it.author.fullName()}")
+                        .complete()
+            }
+
+            it.respond("Done")
+        }
+    }
+
+    command("RefreshRoles") {
+        description = "Refreshes the time-based roles"
+        requiresGuild = true
+
+        execute {
+            val roles = hashMapOf<MembershipTimeRole, Role>()
+
+            for (roleConfig in memberShipRoles) {
+                val roleByName = it.guild?.getRoleByName(roleConfig.name)
+
+                if (roleByName == null) {
+                    val newRole = it.guild!!.createRole().complete()
+                    newRole.manager.setName(roleConfig.name)
+                            .setColor(roleConfig.color)
+                            .setHoisted(false)
+                            .setPermissions(it.guild!!.publicRole.permissions)
+                            .revokePermissions(Permission.MESSAGE_MENTION_EVERYONE)
+                            .complete()
+
+                    roles[roleConfig] = newRole
+                } else {
+                    roles[roleConfig] = roleByName
+                }
+            }
+
+            val sortedRoles = roles.toSortedMap(
+                    compareBy<MembershipTimeRole> { it.requiredTimeInDays })
+
+            val time = LocalDateTime.now().nano
+
+            runBlocking {
+                for (member in it.guild!!.members) {
+                    launch {
+                        println("Dealing with: $member")
+                        val daysOnGuild = ChronoUnit.DAYS.between(member.timeJoined.toLocalDate(), LocalDate.now())
+
+                        val correctRole = sortedRoles
+                                .toList()
+                                .findLast { daysOnGuild >= it.first.requiredTimeInDays }
+
+                        for (role in sortedRoles) {
+                            if (role.value in member.roles) {
+                                it.guild!!.removeRoleFromMember(member, role.value).complete()
+                            }
+                        }
+
+                        if (correctRole != null) {
+                            it.guild!!.addRoleToMember(member, correctRole.second).complete()
+                        }
+                    }
+                }
+            }
+
+            val deltaTime = (LocalDateTime.now().nano - time).toLong() / 1_000_000
+
+            it.respond("Done. Took: $deltaTime milliseconds, and ${deltaTime/it.guild!!.members.size} milliseconds per member.")
+        }
+    }
 }
 
-class EditDeleteReciever : ListenerAdapter() {
-    override fun onMessageDelete(event: MessageDeleteEvent) {
-        val message = event.channel.retrieveMessageById(event.messageIdLong).complete()
+class EditDeleteManager {
+    @Subscribe
+    fun onMessageDelete(event: MessageDeleteEvent) {
+        val message = event.channel.history.getMessageById(event.messageIdLong)
 
-        println(message.contentRaw)
+        println(message!!.contentRaw)
 
         event.jda.getTextChannelById(editDeleteChannelID)?.sendMessage(
                 embed {
@@ -133,7 +220,8 @@ class EditDeleteReciever : ListenerAdapter() {
         )?.complete()
     }
 
-    override fun onMessageUpdate(event: MessageUpdateEvent) {
+    @Subscribe
+    fun onMessageUpdate(event: MessageUpdateEvent) {
 
     }
 }

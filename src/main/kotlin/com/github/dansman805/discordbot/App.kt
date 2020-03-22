@@ -1,6 +1,6 @@
 package com.github.dansman805.discordbot
 
-import com.github.dansman805.discordbot.commands.EditDeleteReciever
+import com.github.dansman805.discordbot.commands.EditDeleteManager
 import me.aberrantfox.kjdautils.api.dsl.PrefixDeleteMode
 import me.aberrantfox.kjdautils.api.startBot
 
@@ -11,7 +11,7 @@ fun main() {
             prefix = "+"
         }
 
-        registerListeners(EditDeleteReciever())
+        registerListeners(EditDeleteManager())
     }
 }
 
