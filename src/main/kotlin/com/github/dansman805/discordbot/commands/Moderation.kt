@@ -181,14 +181,14 @@ fun modCommands() = commands {
                             }
                         }
 
-                        if (correctRole != null && correctRole.second !in member.roles) {
+                        if (correctRole != null) {
                             it.guild!!.addRoleToMember(member, correctRole.second).queue()
                         }
                     }
                 }
             }
 
-            it.respond("Requests submitted; ")
+            it.respond("Requests submitted; results will be seen at some point.")
         }
     }
 }
