@@ -175,20 +175,27 @@ fun modCommands() = commands {
                                 .toList()
                                 .findLast { daysOnGuild >= it.first.requiredTimeInDays }
 
-                        for (role in sortedRoles) {
-                            if (role.value in member.roles) {
-                                it.guild!!.removeRoleFromMember(member, role.value).queue()
+                        if (correctRole?.second !in member.roles) {
+                            println("Modifying role for: ${member.effectiveName}")
+                            for (role in sortedRoles) {
+                                if (role.value in member.roles) {
+                                    try {
+                                        it.guild!!.removeRoleFromMember(member, role.value).complete()
+                                    } catch (e: Exception) {
+                                        // ignore this, this means the role has already been removed
+                                    }
+                                }
                             }
-                        }
 
-                        if (correctRole != null) {
-                            it.guild!!.addRoleToMember(member, correctRole.second).queue()
+                            if (correctRole != null) {
+                                it.guild!!.addRoleToMember(member, correctRole.second).complete()
+                            }
                         }
                     }
                 }
             }
 
-            it.respond("Requests submitted; results will be seen at some point.")
+            it.respond("Done")
         }
     }
 }
