@@ -129,9 +129,9 @@ fun modCommands() = commands {
 
         execute {
             for (roleConfig in memberShipRoles) {
-                it.guild!!.getRoleByName(roleConfig.name)!!.delete()
-                        .reason("Requested by: ${it.author.fullName()}")
-                        .complete()
+                it.guild?.getRoleByName(roleConfig.name)?.delete()
+                            ?.reason("Requested by: ${it.author.fullName()}")
+                            ?.complete()
             }
 
             it.respond("Done")
@@ -166,12 +166,9 @@ fun modCommands() = commands {
             val sortedRoles = roles.toSortedMap(
                     compareBy<MembershipTimeRole> { it.requiredTimeInDays })
 
-            val time = LocalDateTime.now().nano
-
             runBlocking {
                 for (member in it.guild!!.members) {
                     launch {
-                        println("Dealing with: $member")
                         val daysOnGuild = ChronoUnit.DAYS.between(member.timeJoined.toLocalDate(), LocalDate.now())
 
                         val correctRole = sortedRoles
@@ -184,16 +181,14 @@ fun modCommands() = commands {
                             }
                         }
 
-                        if (correctRole != null) {
+                        if (correctRole != null && correctRole.second !in member.roles) {
                             it.guild!!.addRoleToMember(member, correctRole.second).complete()
                         }
-                    }
+                   }
                 }
             }
 
-            val deltaTime = (LocalDateTime.now().nano - time).toLong() / 1_000_000
-
-            it.respond("Done. Took: $deltaTime milliseconds, and ${deltaTime/it.guild!!.members.size} milliseconds per member.")
+            it.respond("Done")
         }
     }
 }

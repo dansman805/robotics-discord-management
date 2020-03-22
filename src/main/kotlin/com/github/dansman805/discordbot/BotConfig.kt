@@ -24,4 +24,4 @@ val memberShipRoles = listOf<MembershipTimeRole>(
         MembershipTimeRole("Old Member", Color(0x34560), 60),
         MembershipTimeRole("Older Member", Color(0x456789), 90),
         MembershipTimeRole("Oldest Member", Color(0x567890), 365)
-        )
+)
