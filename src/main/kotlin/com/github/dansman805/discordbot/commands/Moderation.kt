@@ -177,18 +177,18 @@ fun modCommands() = commands {
 
                         for (role in sortedRoles) {
                             if (role.value in member.roles) {
-                                it.guild!!.removeRoleFromMember(member, role.value).complete()
+                                it.guild!!.removeRoleFromMember(member, role.value).queue()
                             }
                         }
 
                         if (correctRole != null && correctRole.second !in member.roles) {
-                            it.guild!!.addRoleToMember(member, correctRole.second).complete()
+                            it.guild!!.addRoleToMember(member, correctRole.second).queue()
                         }
-                   }
+                    }
                 }
             }
 
-            it.respond("Done")
+            it.respond("Requests submitted; ")
         }
     }
 }
