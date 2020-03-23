@@ -19,9 +19,10 @@ val editDeleteChannelID: Long = readEnvVariable("EDIT_DELETE_CHANNEL_ID").toLong
 val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("u-M-d H:m:s.S")
 
 val memberShipRoles = listOf<MembershipTimeRole>(
-        MembershipTimeRole("New Member", Color(0x12345), 1),
-        MembershipTimeRole("Member", Color(0x23456), 30),
-        MembershipTimeRole("Old Member", Color(0x34560), 60),
-        MembershipTimeRole("Older Member", Color(0x456789), 90),
-        MembershipTimeRole("Oldest Member", Color(0x567890), 365)
+        MembershipTimeRole("Rookie Member", Color(0xEEEEEE), 0),
+        MembershipTimeRole("Aspiring Roboticist", Color(0x23456), 30),
+        MembershipTimeRole("Robot Enthusiast", Color(0x34560), 90),
+        MembershipTimeRole("Veteran Member", Color(0x456789), 365),
+        MembershipTimeRole("Gracious Professional", Color(0x567890), 365*2),
+        MembershipTimeRole("Certified Boomer", Color(0x567890), 365*3)
 )

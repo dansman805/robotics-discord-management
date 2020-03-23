@@ -5,7 +5,6 @@ import com.github.dansman805.discordbot.editDeleteChannelID
 import com.github.dansman805.discordbot.memberShipRoles
 import com.github.dansman805.discordbot.modLogChannelID
 import com.google.common.eventbus.Subscribe
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
@@ -28,14 +27,12 @@ import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
-import net.dv8tion.jda.api.managers.RoleManager
 import java.awt.Color
-import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Period
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import kotlin.system.measureTimeMillis
 
 const val modCommandCategoryName = "Moderation"
 
@@ -166,36 +163,41 @@ fun modCommands() = commands {
             val sortedRoles = roles.toSortedMap(
                     compareBy<MembershipTimeRole> { it.requiredTimeInDays })
 
+            val timesPerMember = mutableListOf<Long>()
+
             runBlocking {
                 for (member in it.guild!!.members) {
                     launch {
-                        val daysOnGuild = ChronoUnit.DAYS.between(member.timeJoined.toLocalDate(), LocalDate.now())
+                        timesPerMember.add(measureTimeMillis {
+                            val daysOnGuild = ChronoUnit.DAYS.between(member.timeJoined.toLocalDate(), LocalDate.now())
 
-                        val correctRole = sortedRoles
-                                .toList()
-                                .findLast { daysOnGuild >= it.first.requiredTimeInDays }
+                            val correctRole = sortedRoles
+                                    .toList()
+                                    .findLast { daysOnGuild >= it.first.requiredTimeInDays }
 
-                        if (correctRole?.second !in member.roles) {
-                            println("Modifying role for: ${member.effectiveName}")
-                            for (role in sortedRoles) {
-                                if (role.value in member.roles) {
-                                    try {
-                                        it.guild!!.removeRoleFromMember(member, role.value).complete()
-                                    } catch (e: Exception) {
-                                        // ignore this, this means the role has already been removed
+                            if (correctRole?.second !in member.roles) {
+                                println("Modifying role for: ${member.effectiveName}")
+                                for (role in sortedRoles) {
+                                    if (role.value in member.roles) {
+                                        try {
+                                            it.guild!!.removeRoleFromMember(member, role.value).complete()
+                                        } catch (e: Exception) {
+                                            // ignore this, this means the role has already been removed
+                                        }
                                     }
                                 }
-                            }
 
-                            if (correctRole != null) {
-                                it.guild!!.addRoleToMember(member, correctRole.second).complete()
+                                if (correctRole != null) {
+                                    it.guild!!.addRoleToMember(member, correctRole.second).complete()
+                                }
                             }
-                        }
+                        })
                     }
                 }
             }
 
             it.respond("Done")
+            println("Took ${timesPerMember.max()} ms per user max, ${timesPerMember.min()} minimum, and ${timesPerMember.average()} average")
         }
     }
 }
@@ -203,7 +205,7 @@ fun modCommands() = commands {
 class EditDeleteManager {
     @Subscribe
     fun onMessageDelete(event: MessageDeleteEvent) {
-        val message = event.channel.history.getMessageById(event.messageIdLong)
+        /*val message = event.channel.history.getMessageById(event.messageIdLong)
 
         println(message!!.contentRaw)
 
@@ -219,7 +221,7 @@ class EditDeleteManager {
                         value = message.author.fullName()
                     }
                 }
-        )?.complete()
+        )?.complete()*/
     }
 
     @Subscribe
