@@ -1,4 +1,4 @@
-package com.github.dansman805.discordbot.commands
+package com.github.dansman805.commands
 
 import com.github.dansman805.discordbot.services.TeamService
 import com.github.dansman805.discordbot.services.WikipediaSummaryService
@@ -7,13 +7,11 @@ import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.annotation.Precondition
 import me.aberrantfox.kjdautils.api.dsl.command.CommandEvent
 import me.aberrantfox.kjdautils.api.dsl.command.commands
-import me.aberrantfox.kjdautils.extensions.jda.fullName
 import me.aberrantfox.kjdautils.extensions.jda.toMember
 import me.aberrantfox.kjdautils.internal.arguments.SentenceArg
 import me.aberrantfox.kjdautils.internal.command.*
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.exceptions.HierarchyException
-import java.io.File
 
 
 open class TeamNumberArg : ArgumentType<Int>() {

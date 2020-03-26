@@ -1,6 +1,8 @@
-package com.github.dansman805.discordbot.commands
+package com.github.dansman805.commands
 
+import com.github.dansman805.discordbot.extensions.memberCount
 import com.github.dansman805.discordbot.extensions.toEmbed
+import com.github.dansman805.discordbot.extensions.toHexString
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.internal.arguments.MemberArg

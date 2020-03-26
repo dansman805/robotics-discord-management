@@ -1,4 +1,4 @@
-package com.github.dansman805.discordbot.extensions
+package com.github.dansman805.extensions
 
 import com.github.dansman805.discordbot.dateTimeFormatter
 import me.aberrantfox.kjdautils.api.dsl.embed

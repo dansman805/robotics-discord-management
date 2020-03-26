@@ -1,7 +1,9 @@
-package com.github.dansman805.discordbot.commands
+package com.github.dansman805.commands
 
 import com.github.dansman805.discordbot.dataclasses.MembershipTimeRole
-import com.github.dansman805.discordbot.editDeleteChannelID
+import com.github.dansman805.discordbot.extensions.memberCount
+import com.github.dansman805.discordbot.extensions.members
+import com.github.dansman805.discordbot.extensions.toHexString
 import com.github.dansman805.discordbot.memberShipRoles
 import com.github.dansman805.discordbot.modLogChannelID
 import com.google.common.eventbus.Subscribe
@@ -11,11 +13,9 @@ import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.annotation.Precondition
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.api.dsl.embed
-import me.aberrantfox.kjdautils.extensions.jda.fullName
-import me.aberrantfox.kjdautils.extensions.jda.getRoleByName
-import me.aberrantfox.kjdautils.extensions.jda.sendPrivateMessage
-import me.aberrantfox.kjdautils.extensions.jda.toMember
+import me.aberrantfox.kjdautils.extensions.jda.*
 import me.aberrantfox.kjdautils.internal.arguments.MemberArg
+import me.aberrantfox.kjdautils.internal.arguments.RoleArg
 import me.aberrantfox.kjdautils.internal.arguments.SentenceArg
 import me.aberrantfox.kjdautils.internal.arguments.UserArg
 import me.aberrantfox.kjdautils.internal.command.Fail
@@ -176,7 +176,8 @@ fun modCommands() = commands {
                                     .findLast { daysOnGuild >= it.first.requiredTimeInDays }
 
                             if (correctRole?.second !in member.roles) {
-                                println("Modifying role for: ${member.effectiveName}")
+                                println("Assigning ${member.effectiveName}: ${correctRole?.second?.name}, days on guild: $daysOnGuild")
+
                                 for (role in sortedRoles) {
                                     if (role.value in member.roles) {
                                         try {
@@ -198,6 +199,64 @@ fun modCommands() = commands {
 
             it.respond("Done")
             println("Took ${timesPerMember.max()} ms per user max, ${timesPerMember.min()} minimum, and ${timesPerMember.average()} average")
+        }
+    }
+
+    /*command("GetFirstMessage") {
+        execute(MemberArg) {
+            it.args.first.
+        }
+    }*/
+
+    command("RoleStatistics", "RoleStat", "RoleStats", "RoleInformation", "RoleInfo") {
+        description = "Shows the number of users with a given role or all the roles"
+
+        execute(RoleArg.makeNullableOptional()) {
+            if (it.args.first != null) {
+                val role = it.args.first!!
+
+                it.respond(embed {
+                    title = "${role.name} Information"
+                    color = role.color
+
+                    field {
+                        name = "Members with the Role"
+                        value = role.memberCount().toString()
+                        inline = true
+                    }
+
+                    field {
+                        name = "Color"
+                        value = role.color?.toHexString() ?: "N/A"
+                        inline = true
+                    }
+                })
+
+                it.respond(embed {
+                    title = "Who has ${role.name}"
+                    color = role.color
+
+                    role.members().forEach {
+                        field {
+                            name = it.effectiveName
+                            value = "${it.fullName()} | ${it.id}"
+                            inline=true
+                        }
+                    }
+                })
+            }
+            else {
+                it.respond(embed {
+                    title = "Role Information"
+                    for (role in it.guild?.roles?.sortedByDescending { it.memberCount() } ?: emptyList()) {
+                        field {
+                            name = role.name
+                            value = role.memberCount().toString()
+                            inline = true
+                        }
+                    }
+                })
+            }
         }
     }
 }

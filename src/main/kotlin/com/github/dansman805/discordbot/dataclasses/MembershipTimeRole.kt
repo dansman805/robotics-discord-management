@@ -1,4 +1,4 @@
-package com.github.dansman805.discordbot.dataclasses
+package com.github.dansman805.dataclasses
 
 import java.awt.Color
 

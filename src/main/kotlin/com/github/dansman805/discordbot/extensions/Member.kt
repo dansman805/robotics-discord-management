@@ -1,6 +1,6 @@
-package com.github.dansman805.discordbot.extensions
+package com.github.dansman805.extensions
 
-import com.github.dansman805.discordbot.dateTimeFormatter
+import com.github.dansman805.dateTimeFormatter
 import me.aberrantfox.kjdautils.api.dsl.embed
 import net.dv8tion.jda.api.entities.Member
 
@@ -59,4 +59,9 @@ fun Member.toEmbed() = embed {
         name = "Icon URL"
         value = iconUrl
     }
+
+    //field {
+    //    name = "Days Since First Message on Guild"
+    //    value = daysSinceFirstMessage().toString()
+    //}
 }

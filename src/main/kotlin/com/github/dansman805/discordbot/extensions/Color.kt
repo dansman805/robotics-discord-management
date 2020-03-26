@@ -1,4 +1,4 @@
-package com.github.dansman805.discordbot.extensions
+package com.github.dansman805.extensions
 
 // shamelessly stolen from
 // https://github.com/JakeJMattson/RoleBot/blob/master/src/main/kotlin/me/jakejmattson/rolebot/extensions/ColorExtensions.kt

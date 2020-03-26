@@ -1,4 +1,4 @@
-package com.github.dansman805.discordbot.commands
+package com.github.dansman805.commands
 
 import com.github.dansman805.discordbot.arguments.GearRatioArg
 import com.github.dansman805.discordbot.arguments.MotorArg

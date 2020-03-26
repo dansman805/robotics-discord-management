@@ -1,4 +1,4 @@
-package com.github.dansman805.discordbot
+package com.github.dansman805
 
 import com.github.dansman805.discordbot.dataclasses.MembershipTimeRole
 import java.awt.Color
@@ -20,9 +20,9 @@ val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("u-M-d H:
 
 val memberShipRoles = listOf<MembershipTimeRole>(
         MembershipTimeRole("Rookie Member", Color(0xEEEEEE), 0),
-        MembershipTimeRole("Aspiring Roboticist", Color(0x23456), 30),
-        MembershipTimeRole("Robot Enthusiast", Color(0x34560), 90),
-        MembershipTimeRole("Veteran Member", Color(0x456789), 365),
-        MembershipTimeRole("Gracious Professional", Color(0x567890), 365*2),
-        MembershipTimeRole("Certified Boomer", Color(0x567890), 365*3)
+        MembershipTimeRole("Aspiring Roboticist", Color(0x4cacff), 30),
+        MembershipTimeRole("Robot Enthusiast", Color(0xfb1414), 90),
+        MembershipTimeRole("Veteran Member", Color(0x099409), 365),
+        MembershipTimeRole("Gracious Professional", Color(0x9091f6), 365 * 2),
+        MembershipTimeRole("Certified Boomer", Color(0xff8c00), 365 * 3)
 )
