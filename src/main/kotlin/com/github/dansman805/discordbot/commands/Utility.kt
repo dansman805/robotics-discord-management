@@ -1,4 +1,4 @@
-package com.github.dansman805.commands
+package com.github.dansman805.discordbot.commands
 
 import com.github.dansman805.discordbot.services.TeamService
 import com.github.dansman805.discordbot.services.WikipediaSummaryService

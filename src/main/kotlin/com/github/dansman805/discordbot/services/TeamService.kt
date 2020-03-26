@@ -1,10 +1,8 @@
 package com.github.dansman805.discordbot.services
 
-import com.github.dansman805.discordbot.appName
-import com.github.dansman805.discordbot.blueAllianceKey
+import com.github.dansman805.discordbot.botConfig
 import com.github.dansman805.discordbot.dataclasses.FRCTeam
 import com.github.dansman805.discordbot.dataclasses.FTCTeam
-import com.github.dansman805.discordbot.orangeAllianceKey
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.responseObject
@@ -19,8 +17,8 @@ class TeamService {
         val result = "https://theorangealliance.org/api/team/$number"
                 .httpGet()
                 .header("Content-Type", "application/json")
-                .header("X-TOA-Key", orangeAllianceKey)
-                .header("X-Application-Origin", appName)
+                .header("X-TOA-Key", botConfig.orangeAllianceKey)
+                .header("X-Application-Origin", botConfig.appName)
                 .responseString().third
 
         val json = Json.nonstrict
@@ -34,8 +32,8 @@ class TeamService {
     fun getFRCTeam(number: Int): FRCTeam {
         val result = Fuel.get("https://www.thebluealliance.com/api/v3/team/frc$number")
                 .header("Content-Type", "application/json")
-                .header("X-TBA-Auth-Key", blueAllianceKey)
-                .header("User-Agent", appName)
+                .header("X-TBA-Auth-Key", botConfig.blueAllianceKey)
+                .header("User-Agent", botConfig.appName)
                 .responseObject<FRCTeam>(json = Json.nonstrict).third
 
         return result.get()

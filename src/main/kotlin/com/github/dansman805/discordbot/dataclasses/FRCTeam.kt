@@ -1,4 +1,4 @@
-package com.github.dansman805.dataclasses
+package com.github.dansman805.discordbot.dataclasses
 
 import kotlinx.serialization.Serializable
 import net.dv8tion.jda.api.EmbedBuilder

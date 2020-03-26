@@ -1,4 +1,4 @@
-package com.github.dansman805.arguments
+package com.github.dansman805.discordbot.arguments
 
 import me.aberrantfox.kjdautils.api.dsl.command.CommandEvent
 import me.aberrantfox.kjdautils.internal.command.ArgumentResult

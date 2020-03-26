@@ -1,11 +1,10 @@
-package com.github.dansman805.commands
+package com.github.dansman805.discordbot.commands
 
+import com.github.dansman805.discordbot.botConfig
 import com.github.dansman805.discordbot.dataclasses.MembershipTimeRole
 import com.github.dansman805.discordbot.extensions.memberCount
 import com.github.dansman805.discordbot.extensions.members
 import com.github.dansman805.discordbot.extensions.toHexString
-import com.github.dansman805.discordbot.memberShipRoles
-import com.github.dansman805.discordbot.modLogChannelID
 import com.google.common.eventbus.Subscribe
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -64,7 +63,7 @@ fun modLog(actor: Member, action: String, target: User, reason: String, embedCol
 
     target.sendPrivateMessage(modLogEmbed)
 
-    actor.guild.getTextChannelById(modLogChannelID)?.sendMessage(modLogEmbed)?.complete()
+    actor.guild.getTextChannelById(botConfig.modLogChannelID)?.sendMessage(modLogEmbed)?.complete()
 }
 
 @Precondition
@@ -125,7 +124,7 @@ fun modCommands() = commands {
         requiresGuild = true
 
         execute {
-            for (roleConfig in memberShipRoles) {
+            for (roleConfig in botConfig.membershipRoles) {
                 it.guild?.getRoleByName(roleConfig.name)?.delete()
                             ?.reason("Requested by: ${it.author.fullName()}")
                             ?.complete()
@@ -142,7 +141,7 @@ fun modCommands() = commands {
         execute {
             val roles = hashMapOf<MembershipTimeRole, Role>()
 
-            for (roleConfig in memberShipRoles) {
+            for (roleConfig in botConfig.membershipRoles) {
                 val roleByName = it.guild?.getRoleByName(roleConfig.name)
 
                 if (roleByName == null) {

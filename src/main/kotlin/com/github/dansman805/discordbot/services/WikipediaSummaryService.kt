@@ -1,4 +1,4 @@
-package com.github.dansman805.services
+package com.github.dansman805.discordbot.services
 
 import com.github.dansman805.discordbot.dataclasses.WikipediaSummary
 import com.github.kittinunf.fuel.Fuel

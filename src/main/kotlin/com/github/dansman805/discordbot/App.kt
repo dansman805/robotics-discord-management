@@ -5,7 +5,7 @@ import me.aberrantfox.kjdautils.api.dsl.PrefixDeleteMode
 import me.aberrantfox.kjdautils.api.startBot
 
 fun main() {
-    startBot(discordToken) {
+    startBot(botConfig.discordToken) {
         configure {
             deleteMode = PrefixDeleteMode.None
             prefix = "+"

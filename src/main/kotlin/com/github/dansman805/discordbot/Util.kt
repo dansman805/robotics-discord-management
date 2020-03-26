@@ -1,4 +1,4 @@
-package com.github.dansman805
+package com.github.dansman805.discordbot
 
 import java.awt.Color
 

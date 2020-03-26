@@ -1,4 +1,4 @@
-package com.github.dansman805.commands
+package com.github.dansman805.discordbot.commands
 
 import com.github.dansman805.discordbot.extensions.memberCount
 import com.github.dansman805.discordbot.extensions.toEmbed

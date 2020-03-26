@@ -1,6 +1,6 @@
-package com.github.dansman805.extensions
+package com.github.dansman805.discordbot.extensions
 
-import com.github.dansman805.dateTimeFormatter
+import com.github.dansman805.discordbot.botConfig
 import me.aberrantfox.kjdautils.api.dsl.embed
 import net.dv8tion.jda.api.entities.Member
 
@@ -31,12 +31,12 @@ fun Member.toEmbed() = embed {
 
     field {
         name = if (m.user.isBot) "Bot Created" else "User Joined Discord"
-        value = m.timeCreated.format(dateTimeFormatter)
+        value = m.timeCreated.format(botConfig.dateTimeFormatter)
     }
 
     field {
         name = "Joined Guild"
-        value = m.timeJoined.format(dateTimeFormatter)
+        value = m.timeJoined.format(botConfig.dateTimeFormatter)
     }
 
     field {

@@ -38,10 +38,6 @@ dependencies {
     implementation("com.github.kittinunf.fuel:fuel-kotlinx-serialization:$fuelVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0")
-
-    
-
-
 }
 
 application {

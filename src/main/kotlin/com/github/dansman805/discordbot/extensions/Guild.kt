@@ -1,6 +1,6 @@
-package com.github.dansman805.extensions
+package com.github.dansman805.discordbot.extensions
 
-import com.github.dansman805.discordbot.dateTimeFormatter
+import com.github.dansman805.discordbot.botConfig
 import me.aberrantfox.kjdautils.api.dsl.embed
 import me.aberrantfox.kjdautils.extensions.jda.fullName
 import net.dv8tion.jda.api.entities.Guild
@@ -27,7 +27,7 @@ fun Guild.toEmbed() = embed {
 
     field {
         name = "Created At"
-        value = g.timeCreated.format(dateTimeFormatter)
+        value = g.timeCreated.format(botConfig.dateTimeFormatter)
     }
 
     field {

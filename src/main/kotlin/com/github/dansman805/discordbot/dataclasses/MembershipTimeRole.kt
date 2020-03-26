@@ -1,5 +1,13 @@
-package com.github.dansman805.dataclasses
+package com.github.dansman805.discordbot.dataclasses
 
+import kotlinx.serialization.Serializable
 import java.awt.Color
 
-data class MembershipTimeRole(val name: String, val color: Color, val requiredTimeInDays: Int)
+@Serializable
+data class MembershipTimeRole(val name: String,
+                              val r: Int,
+                              val g: Int,
+                              val b: Int,
+                              val requiredTimeInDays: Int) {
+    val color get() = Color(r, g, b)
+}

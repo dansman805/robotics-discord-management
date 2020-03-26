@@ -6,5 +6,6 @@ build/
 out/
 .idea/
 
-src/main/kotlin/com/github/dansman805/discordbot/Config.kt
-out/production/classes/com/github/dansman805/discordbot/ConfigKt.class
+config.json
+
+*.db
