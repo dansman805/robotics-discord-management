@@ -13,11 +13,11 @@ object MotorArg : ArgumentType<Motor>() {
 
     override fun convert(arg: String, args: List<String>, event: CommandEvent<*>): ArgumentResult<Motor> {
         return when (arg.toLowerCase()) {
-            "stock393" -> ArgumentResult.Success(Motor.stock393)
-            "highspeed393" -> ArgumentResult.Success(Motor.highSpeed393)
-            "neverest" -> ArgumentResult.Success(Motor.neverRestBare)
-            "yellowJjcket" -> ArgumentResult.Success(Motor.neverRestBare)
-            "revhdhex" -> ArgumentResult.Success(Motor.neverRestBare)
+            "stock393".toLowerCase() -> ArgumentResult.Success(Motor.stock393)
+            "highspeed393".toLowerCase() -> ArgumentResult.Success(Motor.highSpeed393)
+            "neverest".toLowerCase() -> ArgumentResult.Success(Motor.neverRestBare)
+            "yellowjacket".toLowerCase() -> ArgumentResult.Success(Motor.neverRestBare)
+            "revhdhex".toLowerCase() -> ArgumentResult.Success(Motor.neverRestBare)
             else -> ArgumentResult.Error("Expected a motor, got $arg")
         }
     }
