@@ -12,10 +12,12 @@ object GearRatioArg : ArgumentType<Double>() {
 
     override fun convert(arg: String, args: List<String>, event: CommandEvent<*>): ArgumentResult<Double> =
             try {
-                ArgumentResult.Success(arg.split(",")
-                        .map { it.split(":") }
-                        .map { it[1].toDouble() / it[0].toDouble() }
-                        .reduce { n1, n2 -> n1 * n2 })
+                val gearSizes = arg.split(":")
+                        .map { it.split(",") }
+                        .flatten()
+                        .map { it.replace("\\s".toRegex(), "") }
+                        .map { it.toDouble() }
+                ArgumentResult.Success(gearSizes.reduce { gearRatio, gearSize -> gearSize / gearRatio})
             } catch (e: Exception) {
                 ArgumentResult.Error("Expected a gear ratio, got $arg")
             }
