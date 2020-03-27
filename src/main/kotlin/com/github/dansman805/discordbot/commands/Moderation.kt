@@ -230,19 +230,6 @@ fun modCommands() = commands {
                         inline = true
                     }
                 })
-
-                it.respond(embed {
-                    title = "Who has ${role.name}"
-                    color = role.color
-
-                    role.members().forEach {
-                        field {
-                            name = it.effectiveName
-                            value = "${it.fullName()} | ${it.id}"
-                            inline=true
-                        }
-                    }
-                })
             }
             else {
                 it.respond(embed {
