@@ -14,7 +14,7 @@
 | Commands                                                                  | Arguments | Description                                       |
 | ------------------------------------------------------------------------- | --------- | ------------------------------------------------- |
 | Guild, Server, GuildInformation, ServerInformation, GuildInfo, ServerInfo | <none>    | Retrieve information about this guild.            |
-| Member, UserInformation, UserInfo, User                                   | Member    | Retrieve information about a member of the guild. |
+| Member, UserInformation, UserInfo, User                                   | (Member)  | Retrieve information about a member of the guild. |
 
 ## Mechanism Analysis
 | Commands | Arguments         | Description                                   |

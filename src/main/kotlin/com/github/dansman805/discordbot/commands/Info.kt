@@ -5,15 +5,22 @@ import com.github.dansman805.discordbot.extensions.toEmbed
 import com.github.dansman805.discordbot.extensions.toHexString
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.dsl.command.commands
+import me.aberrantfox.kjdautils.extensions.jda.toMember
 import me.aberrantfox.kjdautils.internal.arguments.MemberArg
 
 @CommandSet("Info")
 fun infoCommands() = commands {
     command("Member", "UserInformation", "UserInfo", "User") {
         description = "Retrieve information about a member of the guild."
+        requiresGuild = true
 
-        execute(MemberArg) {
-            it.respond(it.args.first.toEmbed())
+        execute(MemberArg.makeNullableOptional()) {
+            if (it.args.first == null) {
+                it.respond(it.author.toMember(it.guild!!)!!.toEmbed())
+            }
+            else {
+                it.respond(it.args.first!!.toEmbed())
+            }
         }
 
     }
