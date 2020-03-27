@@ -2,9 +2,7 @@ package com.github.dansman805.discordbot.commands
 
 import com.github.dansman805.discordbot.botConfig
 import com.github.dansman805.discordbot.dataclasses.MembershipTimeRole
-import com.github.dansman805.discordbot.extensions.memberCount
-import com.github.dansman805.discordbot.extensions.members
-import com.github.dansman805.discordbot.extensions.toHexString
+import com.github.dansman805.discordbot.extensions.*
 import com.google.common.eventbus.Subscribe
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -13,10 +11,7 @@ import me.aberrantfox.kjdautils.api.annotation.Precondition
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.api.dsl.embed
 import me.aberrantfox.kjdautils.extensions.jda.*
-import me.aberrantfox.kjdautils.internal.arguments.MemberArg
-import me.aberrantfox.kjdautils.internal.arguments.RoleArg
-import me.aberrantfox.kjdautils.internal.arguments.SentenceArg
-import me.aberrantfox.kjdautils.internal.arguments.UserArg
+import me.aberrantfox.kjdautils.internal.arguments.*
 import me.aberrantfox.kjdautils.internal.command.Fail
 import me.aberrantfox.kjdautils.internal.command.Pass
 import me.aberrantfox.kjdautils.internal.command.precondition
@@ -164,11 +159,14 @@ fun modCommands() = commands {
 
             val timesPerMember = mutableListOf<Long>()
 
+            val joinedLogs = it.author.jda.getTextChannelById(botConfig.joinedLogID)!!.allMessages()
+
             runBlocking {
                 for (member in it.guild!!.members) {
                     launch {
                         timesPerMember.add(measureTimeMillis {
-                            val daysOnGuild = ChronoUnit.DAYS.between(member.timeJoined.toLocalDate(), LocalDate.now())
+                            val daysOnGuild = ChronoUnit.DAYS.between(
+                                    member.firstJoin(joinedLogs).toLocalDate(), LocalDate.now())
 
                             val correctRole = sortedRoles
                                     .toList()
@@ -243,6 +241,16 @@ fun modCommands() = commands {
                     }
                 })
             }
+        }
+    }
+
+    command("MemberFirstJoin") {
+        requiresGuild = true
+        execute(MemberArg) {
+            it.respond(botConfig.dateTimeFormatter.format(
+                    it.args.first.firstJoin(it.author.jda.getTextChannelById(botConfig.joinedLogID)!!.allMessages())
+                )
+            )
         }
     }
 }

@@ -28,6 +28,7 @@
 | Ban                                                            | Member, (Text) | Bans someone in the guild for a given reason                 |
 | DeleteRoles                                                    | <none>         | Delete's the time-based roles                                |
 | Kick                                                           | Member, (Text) | Kick someone in the guild for a given reason                 |
+| MemberFirstJoin                                                | Member         | No Description Provider                                      |
 | RefreshRoles                                                   | <none>         | Refreshes the time-based roles                               |
 | RoleStatistics, RoleStat, RoleStats, RoleInformation, RoleInfo | (Role)         | Shows the number of users with a given role or all the roles |
 | Unban                                                          | User, (Text)   | Unbans someone in the guild                                  |

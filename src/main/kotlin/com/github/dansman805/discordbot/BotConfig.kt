@@ -16,6 +16,7 @@ data class BotConfig(
     val appName: String,
     val modLogChannelID : Long,
     val membershipRoles: List<MembershipTimeRole>,
+    val joinedLogID: Long,
     val dateTimeFormatPattern: String = "u-M-d H:m:s.S"
 ) {
     val dateTimeFormatter get() = DateTimeFormatter.ofPattern(dateTimeFormatPattern)

@@ -3,6 +3,9 @@ package com.github.dansman805.discordbot.extensions
 import com.github.dansman805.discordbot.botConfig
 import me.aberrantfox.kjdautils.api.dsl.embed
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Message
+import java.time.OffsetDateTime
+import kotlin.math.min
 
 fun Member.toEmbed() = embed {
     val m = this@toEmbed
@@ -65,3 +68,12 @@ fun Member.toEmbed() = embed {
     //    value = daysSinceFirstMessage().toString()
     //}
 }
+
+fun Member.firstJoin(joinLogs: List<Message>): OffsetDateTime =
+        minOf(
+            this.timeJoined,
+            joinLogs
+                .sortedBy { it.timeCreated }
+                .firstOrNull { it.isMentioned(this, Message.MentionType.USER) }
+                ?.timeCreated ?: this.timeJoined
+        )
