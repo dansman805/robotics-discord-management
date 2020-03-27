@@ -12,12 +12,12 @@ object MotorArg : ArgumentType<Motor>() {
     override val examples = arrayListOf("[Stock393, HighSpeed393, NeveRest, YellowJacket, or RevHDHex]")
 
     override fun convert(arg: String, args: List<String>, event: CommandEvent<*>): ArgumentResult<Motor> {
-        return when (arg) {
-            "Stock393" -> ArgumentResult.Success(Motor.stock393)
-            "HighSpeed393" -> ArgumentResult.Success(Motor.highSpeed393)
-            "NeveRest" -> ArgumentResult.Success(Motor.neverRestBare)
-            "YellowJacket" -> ArgumentResult.Success(Motor.neverRestBare)
-            "RevHDHex" -> ArgumentResult.Success(Motor.neverRestBare)
+        return when (arg.toLowerCase()) {
+            "stock393" -> ArgumentResult.Success(Motor.stock393)
+            "highspeed393" -> ArgumentResult.Success(Motor.highSpeed393)
+            "neverest" -> ArgumentResult.Success(Motor.neverRestBare)
+            "yellowJjcket" -> ArgumentResult.Success(Motor.neverRestBare)
+            "revhdhex" -> ArgumentResult.Success(Motor.neverRestBare)
             else -> ArgumentResult.Error("Expected a motor, got $arg")
         }
     }
