@@ -30,7 +30,7 @@ data class FTCTeam(val team_key: String?,
         val e = EmbedBuilder()
 
         e.setTitle("FIRST®️ Tech Challenge Team $team_number",
-                "https://www.thebluealliance.com/team/$team_number")
+                "https://theorangealliance.org/teams/$team_number")
         e.setColor(0xf89808)
         e.setThumbnail("https://raw.githubusercontent.com/orange-alliance/the-orange-alliance/master/src/assets/imgs/icon512.png")
 

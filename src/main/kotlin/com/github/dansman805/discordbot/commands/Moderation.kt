@@ -15,10 +15,11 @@ import me.aberrantfox.kjdautils.internal.arguments.*
 import me.aberrantfox.kjdautils.internal.command.Fail
 import me.aberrantfox.kjdautils.internal.command.Pass
 import me.aberrantfox.kjdautils.internal.command.precondition
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import java.awt.Color
@@ -230,16 +231,20 @@ fun modCommands() = commands {
                 })
             }
             else {
-                it.respond(embed {
-                    title = "Role Information"
-                    for (role in it.guild?.roles?.sortedByDescending { it.memberCount() } ?: emptyList()) {
-                        field {
-                            name = role.name
-                            value = role.memberCount().toString()
-                            inline = true
-                        }
-                    }
-                })
+                val roleList = it.guild?.roles?.sortedByDescending { it.memberCount() } ?: emptyList()
+
+                val embeds = MutableList(roleList.size) {EmbedBuilder()}
+
+                for (i in embeds.indices) {
+                    val embed = embeds[i / 25]
+                    val role = roleList[i]
+
+                    embed.addField(role.name, role.memberCount().toString(), true)
+                }
+
+                for (embed in embeds) {
+                    it.respond(embed.build())
+                }
             }
         }
     }
@@ -253,6 +258,22 @@ fun modCommands() = commands {
             )
         }
     }
+
+    /*command("AddFirstTimesToDB") {
+        requiresGuild = true
+        execute {
+            val joinedLogs = it.author.jda.getTextChannelById(botConfig.joinedLogID)!!.allMessages()
+
+            transaction {
+                for (member in it.guild!!.members) {
+                    User.new {
+                        idLong = member.user.idLong
+                        initialJoinUnixTime = member.firstJoin(joinedLogs).toEpochSecond()
+                    }
+                }
+            }
+        }
+    }*/
 }
 
 class EditDeleteManager {

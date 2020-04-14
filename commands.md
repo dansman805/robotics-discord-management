@@ -43,4 +43,5 @@
 | TheBlueAlliance, TBA                 | Team Number | Provides data on a given FRC team from The Blue Alliance                                   |
 | TheOrangeAlliance, TOA               | Team Number | Provides data on a given FTC team from The Orange Alliance                                 |
 | Wikipedia, Wiki, W                   | Text        | Provides the Wikipedia summary on a given topic                                            |
+| goBILDA                              | Word        | Provides the name of a goBILDA part based on its part number                               |
 

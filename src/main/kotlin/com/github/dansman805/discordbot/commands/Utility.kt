@@ -1,5 +1,6 @@
 package com.github.dansman805.discordbot.commands
 
+import com.github.dansman805.discordbot.services.GoBILDAPartService
 import com.github.dansman805.discordbot.services.TeamService
 import com.github.dansman805.discordbot.services.WikipediaSummaryService
 import kotlinx.serialization.ImplicitReflectionSerializer
@@ -9,6 +10,7 @@ import me.aberrantfox.kjdautils.api.dsl.command.CommandEvent
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.extensions.jda.toMember
 import me.aberrantfox.kjdautils.internal.arguments.SentenceArg
+import me.aberrantfox.kjdautils.internal.arguments.WordArg
 import me.aberrantfox.kjdautils.internal.command.*
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.exceptions.HierarchyException
@@ -43,7 +45,9 @@ fun hasNickPerms() = precondition {
 @CommandSet("Utility")
 @ImplicitReflectionSerializer
 @kotlinx.serialization.UnstableDefault
-fun utilityCommands(teamService: TeamService, wikipediaSummaryService: WikipediaSummaryService) = commands {
+fun utilityCommands(teamService: TeamService,
+                    wikipediaSummaryService: WikipediaSummaryService,
+                    goBILDAPartService: GoBILDAPartService) = commands {
     command("Ping") {
         description = "Responds with Pong! (As well as the server name, and the time it takes the bot to respond)"
         execute {
@@ -119,6 +123,14 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
             else {
                 it.respond("No Wikipedia article found!")
             }
+        }
+    }
+
+    command("goBILDA") {
+        description = "Provides the name of a goBILDA part based on its part number"
+
+        execute(WordArg) {
+            println(goBILDAPartService.getProduct(it.args.first))
         }
     }
 }

@@ -1,12 +1,16 @@
 package com.github.dansman805.discordbot.commands
 
+import com.google.common.eventbus.Subscribe
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.api.dsl.embed
+import me.aberrantfox.kjdautils.extensions.jda.hasRole
 import me.aberrantfox.kjdautils.extensions.jda.message
 import me.aberrantfox.kjdautils.internal.arguments.MemberArg
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.requests.RestAction
+import java.time.LocalDateTime
 import kotlin.math.max
 import kotlin.random.Random
 
@@ -31,6 +35,7 @@ fun funCommands() = commands {
             // val damageValues = listOf(100, 150, 200, 300, 50, 250, 420, 69)
 
             val players = listOf(it.guild!!.getMember(it.author)!!, it.args.first)
+
             val healths = arrayListOf(1000, 1000)
 
             var turn = Random.nextInt(0, 1)
@@ -90,3 +95,49 @@ fun funCommands() = commands {
         }
     }
 }
+
+class Infection
+/*@Subscribe
+fun onMessageReceived(event: MessageReceivedEvent) {
+
+
+    val nextMessage = event
+            .message
+            .textChannel
+            .getHistoryAfter(event.message, 2)
+            .complete()
+            .retrievedHistory
+            .first()*/
+
+        /*val previousMessage = event
+                .message
+                .textChannel
+                .getHistoryBefore(event.message, 2)
+                .complete()
+                .retrievedHistory
+                .first()
+
+        if (Random.nextDouble(0.0, 1.0) > 0.2 || LocalDateTime.now().dayOfMonth != 1) {
+            return
+        }
+
+        if (!previousMessage.author.isBot) {
+            if (previousMessage.member!!.roles.none {it.idLong == infectedID}) {
+                event.guild.addRoleToMember(
+                        previousMessage.guild.getMember(previousMessage.author)!!,
+                        event.guild.getRoleById(infectedID)!!
+                ).complete()
+
+                println("${previousMessage.author},${LocalDateTime.now().hour},${LocalDateTime.now().minute},${LocalDateTime.now().second}")
+            }
+        }
+
+        /*if (!nextMessage.author.isBot && Random.nextDouble(0.0, 1.0) < 0.75) {
+            println("Infecting: ${nextMessage.author}")
+
+            event.guild.addRoleToMember(
+                    nextMessage.guild.getMember(nextMessage.author)!!,
+                    event.guild.getRoleById(infectedID)!!
+            )
+        }*/
+    }*/
