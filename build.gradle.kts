@@ -48,6 +48,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
     implementation("org.jsoup:jsoup:1.10.3")
     implementation("de.swirtz:ktsRunner:0.0.8")
+
+    implementation("org.mariuszgromada.math:MathParser.org-mXparser:4.4.2")
 }
 
 application {

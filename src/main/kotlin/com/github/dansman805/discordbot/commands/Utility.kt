@@ -13,6 +13,7 @@ import me.aberrantfox.kjdautils.internal.arguments.WordArg
 import me.aberrantfox.kjdautils.internal.command.*
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.exceptions.HierarchyException
+import org.mariuszgromada.math.mxparser.*
 
 
 open class TeamNumberArg : ArgumentType<Int>() {
@@ -120,6 +121,15 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
             else {
                 it.respond("No Wikipedia article found!")
             }
+        }
+    }
+
+    command("Math") {
+        description = "Does math."
+
+        execute(SentenceArg) {
+            val expression = Expression(it.args.first)
+            it.respond("${expression.getExpressionString()} = ${expression.calculate()}")
         }
     }
 }
