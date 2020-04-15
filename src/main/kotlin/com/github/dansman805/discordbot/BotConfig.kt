@@ -18,6 +18,7 @@ data class BotConfig(
     val modLogChannelID : Long,
     val membershipRoles: List<MembershipTimeRole>,
     val joinedLogID: Long,
+    val developerIDs: List<Long>,
     val publicIdeaChannelID: Long? = null,
     val dateTimeFormatPattern: String = "u-M-d H:m:s.S"
 ) {

@@ -24,6 +24,7 @@ repositories {
     jcenter()
 
     maven { setUrl("https://jitpack.io") }
+    maven { setUrl("https://dl.bintray.com/s1m0nw1/KtsRunner") }
 }
 
 dependencies {
@@ -35,7 +36,6 @@ dependencies {
 
     // Use the Kotlin JUnit integration
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-
     implementation("com.gitlab.aberrantfox:KUtils:0.14.0")
 
     val fuelVersion = "2.2.0"
@@ -47,6 +47,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
     implementation("org.jsoup:jsoup:1.10.3")
+    implementation("de.swirtz:ktsRunner:0.0.8")
 }
 
 application {

@@ -5,6 +5,11 @@
 | ---------- | -------------------------- |
 | (Argument) | This argument is optional. |
 
+## Developer
+| Commands       | Arguments | Description             |
+| -------------- | --------- | ----------------------- |
+| Eval, Evaluate | Code      | No Description Provider |
+
 ## Fun
 | Commands | Arguments | Description                        |
 | -------- | --------- | ---------------------------------- |
