@@ -9,7 +9,6 @@ import me.aberrantfox.kjdautils.api.dsl.command.CommandEvent
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.extensions.jda.toMember
 import me.aberrantfox.kjdautils.internal.arguments.SentenceArg
-import me.aberrantfox.kjdautils.internal.arguments.WordArg
 import me.aberrantfox.kjdautils.internal.command.*
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.exceptions.HierarchyException

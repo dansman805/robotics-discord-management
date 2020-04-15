@@ -33,7 +33,12 @@ fun developerCommands(evalService: CodeEvalService) = commands {
             val rawCode = it.args.first
             val code = rawCode.replace("```.*", "").replace("`", "")
 
-            it.respond(evalService.runCode(code, it.author.jda) ?: "Done.")
+            val result = evalService.runCode(code, it.author.jda)
+
+            it.respond(when (result) {
+                null -> "Done."
+                else -> "```$result```"
+            })
         }
     }
 }

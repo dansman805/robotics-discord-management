@@ -50,6 +50,7 @@ dependencies {
     implementation("de.swirtz:ktsRunner:0.0.8")
 
     implementation("org.mariuszgromada.math:MathParser.org-mXparser:4.4.2")
+    implementation("org.scilab.forge:jlatexmath:1.0.7")
 }
 
 application {
