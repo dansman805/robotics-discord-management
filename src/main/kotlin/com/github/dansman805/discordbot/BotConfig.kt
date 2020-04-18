@@ -4,6 +4,9 @@ import com.github.dansman805.discordbot.dataclasses.MembershipTimeRole
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import me.liuwj.ktorm.database.Database
+import me.liuwj.ktorm.logging.ConsoleLogger
+import me.liuwj.ktorm.logging.LogLevel
 import java.io.File
 import java.io.FileNotFoundException
 import java.time.format.DateTimeFormatter
@@ -11,7 +14,7 @@ import java.time.format.DateTimeFormatter
 @Serializable
 data class BotConfig(
     val discordToken: String,
-    val databaseLocation: String,
+    val databaseURL: String,
     val orangeAllianceKey: String,
     val blueAllianceKey: String,
     val appName: String,
@@ -23,8 +26,6 @@ data class BotConfig(
     val dateTimeFormatPattern: String = "u-M-d H:m:s.S"
 ) {
     val dateTimeFormatter: DateTimeFormatter get() = DateTimeFormatter.ofPattern(dateTimeFormatPattern)
-    private val databaseFullPath get() = File(databaseLocation).absolutePath
-    val databaseURL get() = "jdbc:sqlite:$databaseFullPath"
 }
 
 private val json = Json(JsonConfiguration.Stable)
@@ -40,7 +41,15 @@ val botConfig by lazy {
     }
 }
 
+val db by lazy {
+    Database.connect (
+        url = botConfig.databaseURL,
+            driver = "org.postgresql.Driver",
+            logger = ConsoleLogger(threshold = LogLevel.INFO)
+    )
+}
+
 
 fun initDb() {
-
+    //db
 }

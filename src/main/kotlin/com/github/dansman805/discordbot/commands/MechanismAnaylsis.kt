@@ -2,9 +2,13 @@ package com.github.dansman805.discordbot.commands
 
 import com.github.dansman805.discordbot.arguments.GearRatioArg
 import com.github.dansman805.discordbot.arguments.MotorArg
+import com.github.dansman805.discordbot.dataclasses.Drivetrain
+import com.github.dansman805.discordbot.dataclasses.Motor
 import kotlinx.serialization.ImplicitReflectionSerializer
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
+import me.aberrantfox.kjdautils.internal.arguments.DoubleArg
 import me.aberrantfox.kjdautils.api.dsl.command.commands
+
 
 
 /**
@@ -29,10 +33,21 @@ fun jvnCommands() = commands {
     command("Gear") {
         description = "Provides statistics about a motor when geared"
 
-        execute(MotorArg, GearRatioArg) {
-            val motor = it.args.first.gear(it.args.second)
+        execute(GearRatioArg, MotorArg.makeOptional(Motor.neverRestBare)) {
+            val motor = it.args.second.gear(it.args.first)
 
             it.respond(motor.genEmbed("Geared Motor Statistics"))
+        }
+    }
+
+    command("Drivetrain", "DT") {
+        description = "Provides statistics about a drivetrain with a wheel diameter, gear ratio and optionally a motor"
+
+        execute(GearRatioArg, DoubleArg, MotorArg.makeOptional(Motor.neverRestBare)) {
+            val motor = it.args.third.gear(it.args.first)
+            val drivetrain = Drivetrain(motor, it.args.second)
+
+            it.respond(drivetrain.toEmbed())
         }
     }
 }

@@ -8,7 +8,9 @@
 ## Developer
 | Commands       | Arguments | Description             |
 | -------------- | --------- | ----------------------- |
+| AddMessage     | MessageID | No Description Provider |
 | Eval, Evaluate | Code      | No Description Provider |
+| ReadDB         | <none>    | No Description Provider |
 
 ## Fun
 | Commands | Arguments | Description                        |
@@ -22,10 +24,11 @@
 | Member, UserInformation, UserInfo, User                                   | (Member)  | Retrieve information about a member of the guild. |
 
 ## Mechanism Analysis
-| Commands | Arguments         | Description                                   |
-| -------- | ----------------- | --------------------------------------------- |
-| Gear     | Motor, Gear Ratio | Provides statistics about a motor when geared |
-| Motor    | Motor             | Provides statistics about a motor             |
+| Commands       | Arguments                    | Description                                                                                     |
+| -------------- | ---------------------------- | ----------------------------------------------------------------------------------------------- |
+| Drivetrain, DT | Gear Ratio, Decimal, (Motor) | Provides statistics about a drivetrain with a wheel diameter, gear ratio and optionally a motor |
+| Gear           | Gear Ratio, (Motor)          | Provides statistics about a motor when geared                                                   |
+| Motor          | Motor                        | Provides statistics about a motor                                                               |
 
 ## Moderation
 | Commands                                                       | Arguments      | Description                                                  |
@@ -43,7 +46,6 @@
 | Commands                             | Arguments   | Description                                                                                |
 | ------------------------------------ | ----------- | ------------------------------------------------------------------------------------------ |
 | Help                                 | (Command)   | Display a help menu.                                                                       |
-| Math                                 | Text        | Does math.                                                                                 |
 | Ping                                 | <none>      | Responds with Pong! (As well as the server name, and the time it takes the bot to respond) |
 | SetNickname, SetNick, Nickname, Nick | Text        | Allows a member to change their nickname.                                                  |
 | TheBlueAlliance, TBA                 | Team Number | Provides data on a given FRC team from The Blue Alliance                                   |

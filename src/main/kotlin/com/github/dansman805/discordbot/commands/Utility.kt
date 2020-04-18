@@ -2,6 +2,7 @@ package com.github.dansman805.discordbot.commands
 
 import com.github.dansman805.discordbot.services.TeamService
 import com.github.dansman805.discordbot.services.WikipediaSummaryService
+import kotlinx.coroutines.*
 import kotlinx.serialization.ImplicitReflectionSerializer
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.annotation.Precondition
@@ -113,22 +114,11 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
         execute(SentenceArg) {
             val summary = wikipediaSummaryService.getSummary(it.args.first)
 
-
             if (summary?.toEmbed() != null) {
                 it.respond(summary.toEmbed())
-            }
-            else {
+            } else {
                 it.respond("No Wikipedia article found!")
             }
-        }
-    }
-
-    command("Math") {
-        description = "Does math."
-
-        execute(SentenceArg) {
-            val expression = Expression(it.args.first)
-            it.respond("${expression.getExpressionString()} = ${expression.calculate()}")
         }
     }
 }
