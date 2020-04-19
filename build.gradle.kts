@@ -43,14 +43,14 @@ dependencies {
     implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
     implementation("com.github.kittinunf.fuel:fuel-kotlinx-serialization:$fuelVersion")
 
-    implementation("org.postgresql:postgresql:42.2.11")
+    implementation("org.xerial:sqlite-jdbc:3.30.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
     implementation("org.jsoup:jsoup:1.10.3")
     implementation("de.swirtz:ktsRunner:0.0.8")
 
-    implementation("org.mariuszgromada.math:MathParser.org-mXparser:4.4.2")
     implementation("me.liuwj.ktorm:ktorm-core:2.7.2")
+    implementation("com.github.holgerbrandl:kravis:0.5")
 }
 
 application {

@@ -13,8 +13,6 @@ import me.aberrantfox.kjdautils.internal.arguments.SentenceArg
 import me.aberrantfox.kjdautils.internal.command.*
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.exceptions.HierarchyException
-import org.mariuszgromada.math.mxparser.*
-
 
 open class TeamNumberArg : ArgumentType<Int>() {
     companion object : TeamNumberArg()

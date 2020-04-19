@@ -53,13 +53,13 @@ fun modLog(actor: Member, action: String, target: User, reason: String, embedCol
 
         field {
             name = "Timestamp"
-            value = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS").format(LocalDateTime.now())
+            value = botConfig.dateTimeFormatter.format(LocalDateTime.now())
         }
     }
 
     target.sendPrivateMessage(modLogEmbed)
 
-    actor.guild.getTextChannelById(botConfig.modLogChannelID)?.sendMessage(modLogEmbed)?.complete()
+    actor.guild.getTextChannelById(botConfig.modLogChannelId)?.sendMessage(modLogEmbed)?.complete()
 }
 
 @Precondition
@@ -160,7 +160,7 @@ fun modCommands() = commands {
 
             val timesPerMember = mutableListOf<Long>()
 
-            val joinedLogs = it.author.jda.getTextChannelById(botConfig.joinedLogID)!!.allMessages()
+            val joinedLogs = it.author.jda.getTextChannelById(botConfig.joinedLogId)!!.allMessages()
 
             runBlocking {
                 for (member in it.guild!!.members) {
@@ -253,7 +253,7 @@ fun modCommands() = commands {
         requiresGuild = true
         execute(MemberArg) {
             it.respond(botConfig.dateTimeFormatter.format(
-                    it.args.first.firstJoin(it.author.jda.getTextChannelById(botConfig.joinedLogID)!!.allMessages())
+                    it.args.first.firstJoin(it.author.jda.getTextChannelById(botConfig.joinedLogId)!!.allMessages())
                 )
             )
         }

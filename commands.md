@@ -6,11 +6,13 @@
 | (Argument) | This argument is optional. |
 
 ## Developer
-| Commands       | Arguments | Description             |
-| -------------- | --------- | ----------------------- |
-| AddMessage     | MessageID | No Description Provider |
-| Eval, Evaluate | Code      | No Description Provider |
-| ReadDB         | <none>    | No Description Provider |
+| Commands       | Arguments   | Description             |
+| -------------- | ----------- | ----------------------- |
+| AddChannel     | TextChannel | No Description Provider |
+| AddMessage     | MessageID   | No Description Provider |
+| DBMessageCount | <none>      | No Description Provider |
+| Eval, Evaluate | Code        | No Description Provider |
+| Refresh        | <none>      | No Description Provider |
 
 ## Fun
 | Commands | Arguments | Description                        |
@@ -41,6 +43,11 @@
 | RoleStatistics, RoleStat, RoleStats, RoleInformation, RoleInfo | (Role)         | Shows the number of users with a given role or all the roles |
 | Unban                                                          | User, (Text)   | Unbans someone in the guild                                  |
 | Warn                                                           | User, Text     | Warn an user                                                 |
+
+## Statistics
+| Commands           | Arguments         | Description             |
+| ------------------ | ----------------- | ----------------------- |
+| CumulativeMessages | (User), (Boolean) | No Description Provider |
 
 ## Utility
 | Commands                             | Arguments   | Description                                                                                |

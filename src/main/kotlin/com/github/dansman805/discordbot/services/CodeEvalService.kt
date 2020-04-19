@@ -4,7 +4,6 @@ import me.aberrantfox.kjdautils.api.annotation.Service
 import de.swirtz.ktsrunner.objectloader.KtsObjectLoader
 import de.swirtz.ktsrunner.objectloader.LoadException
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.Emote
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.lang.Exception

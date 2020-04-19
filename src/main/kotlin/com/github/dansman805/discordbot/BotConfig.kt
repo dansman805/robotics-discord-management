@@ -13,17 +13,18 @@ import java.time.format.DateTimeFormatter
 
 @Serializable
 data class BotConfig(
-    val discordToken: String,
-    val databaseURL: String,
-    val orangeAllianceKey: String,
-    val blueAllianceKey: String,
-    val appName: String,
-    val modLogChannelID : Long,
-    val membershipRoles: List<MembershipTimeRole>,
-    val joinedLogID: Long,
-    val developerIDs: List<Long>,
-    val publicIdeaChannelID: Long? = null,
-    val dateTimeFormatPattern: String = "u-M-d H:m:s.S"
+        val discordToken: String,
+        val databaseURL: String,
+        val orangeAllianceKey: String,
+        val blueAllianceKey: String,
+        val appName: String,
+        val modLogChannelId : Long,
+        val membershipRoles: List<MembershipTimeRole>,
+        val joinedLogId: Long,
+        val developerIds: List<Long>,
+        val hiddenChannelIds: List<Long>? = null,
+        val publicIdeaChannelId: Long? = null,
+        val dateTimeFormatPattern: String = "u-M-d H:m:s.S"
 ) {
     val dateTimeFormatter: DateTimeFormatter get() = DateTimeFormatter.ofPattern(dateTimeFormatPattern)
 }
@@ -44,12 +45,11 @@ val botConfig by lazy {
 val db by lazy {
     Database.connect (
         url = botConfig.databaseURL,
-            driver = "org.postgresql.Driver",
+            driver = "org.sqlite.JDBC",
             logger = ConsoleLogger(threshold = LogLevel.INFO)
     )
 }
 
-
 fun initDb() {
-    //db
+    db
 }
