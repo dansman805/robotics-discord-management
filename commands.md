@@ -6,13 +6,10 @@
 | (Argument) | This argument is optional. |
 
 ## Developer
-| Commands       | Arguments   | Description             |
-| -------------- | ----------- | ----------------------- |
-| AddChannel     | TextChannel | No Description Provider |
-| AddMessage     | MessageID   | No Description Provider |
-| DBMessageCount | <none>      | No Description Provider |
-| Eval, Evaluate | Code        | No Description Provider |
-| Refresh        | <none>      | No Description Provider |
+| Commands       | Arguments | Description             |
+| -------------- | --------- | ----------------------- |
+| DBMessageCount | <none>    | No Description Provider |
+| Refresh        | <none>    | No Description Provider |
 
 ## Fun
 | Commands | Arguments | Description                        |
@@ -45,9 +42,12 @@
 | Warn                                                           | User, Text     | Warn an user                                                 |
 
 ## Statistics
-| Commands           | Arguments         | Description             |
-| ------------------ | ----------------- | ----------------------- |
-| CumulativeMessages | (User), (Boolean) | No Description Provider |
+| Commands            | Arguments                            | Description                                                                            |
+| ------------------- | ------------------------------------ | -------------------------------------------------------------------------------------- |
+| ChannelDistribution | (User), (Boolean)                    | Graphs the amount of messages in each channel for either a provided user or the guild. |
+| CumulativeMessages  | (User), (Word), (Integer), (Boolean) | Graphs the cumulative amount of messages for either a provided user or the guild.      |
+| MessageRanking      | (Word), (Integer), (Boolean)         | Graphs the ranking of members by messages of the server with an optional filter.       |
+| Messages            | (User), (Word), (Integer), (Boolean) | Graphs the amount of messages for either a provided user or the guild.                 |
 
 ## Utility
 | Commands                             | Arguments   | Description                                                                                |

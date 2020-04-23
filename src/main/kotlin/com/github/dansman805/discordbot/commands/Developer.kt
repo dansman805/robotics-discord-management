@@ -5,7 +5,6 @@ import com.github.dansman805.discordbot.db
 import com.github.dansman805.discordbot.entities.MessageDatabaseEntry
 import com.github.dansman805.discordbot.entities.Messages
 import com.github.dansman805.discordbot.extensions.allMessages
-import com.github.dansman805.discordbot.services.CodeEvalService
 import com.github.dansman805.discordbot.services.StatisticsService
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.annotation.Precondition
@@ -36,58 +35,7 @@ fun isDeveloper() = precondition {
 }
 
 @CommandSet(developerCategoryName)
-fun developerCommands(evalService: CodeEvalService, statistics: StatisticsService) = commands {
-
-    command("Eval", "Evaluate") {
-        execute(SentenceArg("Code")) {
-            val rawCode = it.args.first
-            it.message.contentRaw
-            val code = rawCode.replace("```.*", "").replace("`", "")
-
-            val result = evalService.runCode(code, it.author.jda)
-
-            it.respond(when (result) {
-                null -> "Done."
-                else -> "```$result```"
-            })
-        }
-    }
-
-    command("AddMessage") {
-        execute(MessageArg) {
-            db.sequenceOf(Messages).add(MessageDatabaseEntry.fromMessage(it.args.first))
-        }
-    }
-
-    command("AddChannel") {
-        execute(TextChannelArg) {
-            val sequence = db.sequenceOf(Messages)
-
-            it.args.first.allMessages().forEach {
-                sequence.add(MessageDatabaseEntry.fromMessage(it))
-            }
-        }
-    }
-
-    /*command("SeedDB") {
-        execute {
-            val sequence = db.sequenceOf(Messages)
-
-            it.guild!!.textChannels.forEach { channel ->
-                try {
-                    if (sequence.filter { it.channelId eq channel.idLong }.count() == 0) {
-                        channel.allMessages().forEach {
-                            sequence.add(MessageDatabaseEntry.fromMessage(it))
-                        }
-                    }
-                }
-                catch (e: Exception) {
-                    // do nothing, just ignore the channel
-                }
-            }
-        }
-    }*/
-
+fun developerCommands() = commands {
     fun getLatestMessage(channel: TextChannel): Long  = try {
         channel.latestMessageIdLong
     }
