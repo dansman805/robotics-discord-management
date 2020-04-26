@@ -46,7 +46,7 @@
 | ------------------- | ------------------------------------ | -------------------------------------------------------------------------------------- |
 | ChannelDistribution | (User), (Boolean)                    | Graphs the amount of messages in each channel for either a provided user or the guild. |
 | CumulativeMessages  | (User), (Word), (Integer), (Boolean) | Graphs the cumulative amount of messages for either a provided user or the guild.      |
-| MessageRanking      | (Word), (Integer), (Boolean)         | Graphs the ranking of members by messages of the server with an optional filter.       |
+| MessageRanking      | (Integer), (Word), (Boolean)         | Graphs the ranking of members by messages of the server with an optional filter.       |
 | Messages            | (User), (Word), (Integer), (Boolean) | Graphs the amount of messages for either a provided user or the guild.                 |
 
 ## Utility

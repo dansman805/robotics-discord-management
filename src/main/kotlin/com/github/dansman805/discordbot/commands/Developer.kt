@@ -8,6 +8,7 @@ import com.github.dansman805.discordbot.extensions.allMessages
 import com.github.dansman805.discordbot.services.StatisticsService
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.annotation.Precondition
+import me.aberrantfox.kjdautils.api.dsl.command.DoubleArg
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.extensions.jda.toMember
 import me.aberrantfox.kjdautils.internal.arguments.*
@@ -103,8 +104,6 @@ fun developerCommands() = commands {
     command("DBMessageCount") {
         execute {
             val sequence = db.sequenceOf(Messages)
-
-            val channelIds = db.sequenceOf(Messages).map { it.channelId }.distinct()
 
             it.respond("Number of Messages Stored: ${sequence.totalRecords}")
         }

@@ -50,7 +50,8 @@ dependencies {
     implementation("de.swirtz:ktsRunner:0.0.8")
 
     implementation("me.liuwj.ktorm:ktorm-core:2.7.2")
-    implementation("com.github.holgerbrandl:kravis:0.5")
+
+    implementation("org.knowm.xchart:xchart:3.6.2")
 }
 
 application {

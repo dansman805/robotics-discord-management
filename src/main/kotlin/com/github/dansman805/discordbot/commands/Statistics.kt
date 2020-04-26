@@ -68,14 +68,14 @@ fun statistics(statistics: StatisticsService) = commands {
 
         description = "Graphs the ranking of members by messages of the server with an optional filter."
 
-        execute(WordArg.makeOptional { "" },
-                IntegerArg.makeOptional { 20 },
+        execute(IntegerArg.makeOptional { 10 },
+                WordArg.makeOptional { "" },
                 BooleanArg.makeOptional { false }) {
             statistics.messageRanking(
                     it.guild!!,
                     it.message.textChannel,
-                    it.args.first.replace("`", ""),
-                    it.args.second,
+                    it.args.second.replace("`", ""),
+                    it.args.first,
                     it.args.third
             )
         }

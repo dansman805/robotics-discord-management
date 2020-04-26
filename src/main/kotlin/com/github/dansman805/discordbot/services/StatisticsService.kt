@@ -3,21 +3,23 @@ package com.github.dansman805.discordbot.services
 import com.github.dansman805.discordbot.botConfig
 import com.github.dansman805.discordbot.db
 import com.github.dansman805.discordbot.entities.Messages
-import kravis.*
+import com.github.dansman805.discordbot.toDate
 import me.aberrantfox.kjdautils.api.annotation.Service
 import me.liuwj.ktorm.dsl.*
 import me.liuwj.ktorm.entity.*
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
-import java.awt.Dimension
 import java.io.File
 import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.floor
+import org.knowm.xchart.*
+import org.knowm.xchart.internal.chartpart.Chart
+import org.knowm.xchart.internal.series.Series
+import org.knowm.xchart.style.Styler
+import java.awt.Color
 
 @Service
 class StatisticsService {
@@ -66,29 +68,25 @@ class StatisticsService {
 
         val cumulativeMessagesPerDay = messagesPerDay.toMutableList()
 
-        for (i in 0 until cumulativeMessagesPerDay.count()) {
+        val dates = mutableListOf<Date>()
+        val messages = mutableListOf<Int>()
+
+        for (i in 0 until messagesPerDay.count()) {
             val messageCountForDay = cumulativeMessagesPerDay[i]
 
-            cumulativeMessagesPerDay[i] = Pair<Long, Int>(
-                    messageCountForDay.first,
-                    messageCountForDay.second + if (i > 0) cumulativeMessagesPerDay[i - 1].second else 0
-            )
+            dates.add(messageCountForDay.first.toDate())
+            messages.add(messageCountForDay.second + if (i > 0) messages[i - 1] else 0)
         }
 
-        val dateTimeFormatter = DateTimeFormatter.ISO_DATE
+        val plot = XYChartBuilder().apply {
+            title = title("Cumulative Messages", guild, user, filter)
+        }
+                .xAxisTitle("Time")
+                .yAxisTitle("Messages")
+                .build()
 
-        val file = File("${botConfig.dateTimeFormatter.format(LocalDateTime.now())}.png")
-
-        cumulativeMessagesPerDay.plot(x = {
-            LocalDateTime.ofEpochSecond(it.first, 0, ZoneOffset.UTC).format(dateTimeFormatter)
-        }, y = {it.second})
-                .geomLine()
-                .title("Cumulative Messages", guild, user, filter)
-                .xLabel("Time")
-                .yLabel("Messages")
-                .styleAndSend(textChannel, svg)
-
-        textChannel.sendFile(file).complete()
+        plot.addSeries("Messages", dates, messages)
+        plot.styleAndSend(textChannel, svg)
     }
 
     fun messageRanking(guild: Guild, textChannel: TextChannel, filter: String, topN: Int, svg: Boolean) {
@@ -97,43 +95,45 @@ class StatisticsService {
                 .asKotlinSequence()
                 .filter { pattern.containsMatchIn(it.contentRaw) }
 
-        val messageCount = HashMap<Long, Int>()
-        messages.forEach {
-            messageCount[it.authorId] = messageCount[it.authorId]?.plus(1) ?: 1
+        val messageCounts = HashMap<Long, Int>()
+
+        messages.map { it.authorId }.forEach {
+            messageCounts[it] = messageCounts[it]?.plus(1) ?: 1
         }
-        
-        val topNMessageUsers = messageCount
-                .toList()
-                .sortedByDescending { it.second }
-                .subList(0, topN)
-                .map { Pair(it.first, guild.jda.getUserById(it.first)?.name ?: "???") }
 
-        val topNMessageUserIds = topNMessageUsers.map { it.first }.toList()
+        val topNPeople = messageCounts.toList().sortedByDescending { it.second }.subList(0, topN)
 
-        messages.asIterable()
-                .filter { it.authorId in topNMessageUserIds }
-                .plot(x = {it.authorId}, y = {it})
-                .geomBar(stat = Stat.count)
-                .title("Top Users by Messages", guild, filter = filter)
-                .xLabel("User")
-                .yLabel("Message Count")
-                .styleAndSend(textChannel, svg)
+        val users = topNPeople.map { guild.jda.getUserById(it.first)?.name ?: it.first.toString() }
+        val topNMessageCounts = topNPeople.map { it.second }
+
+        val plot = CategoryChartBuilder().apply {
+            title = title("Message Authors", guild, filter = filter)
+        }
+                .xAxisTitle("Author")
+                .yAxisTitle("Message Count")
+                .build()
+
+        plot.addSeries("Messages", users, topNMessageCounts)
+        plot.styleAndSend(textChannel, svg)
     }
 
     fun messages(user: User?, guild: Guild, textChannel: TextChannel, filter: String, days: Int, svg: Boolean) {
-        val messagesPerDay = messagesPerDay(user, guild, filter, days).map { Pair<Long, Int>(it.key, it.value) }
-        val dateTimeFormatter = DateTimeFormatter.ISO_DATE
+        val messagesPerDay = messagesPerDay(user, guild, filter, days).toList()
 
-        val file = File("${botConfig.dateTimeFormatter.format(LocalDateTime.now())}.png")
+        val dates = messagesPerDay.map { it.first.toDate() }
+        val messages = messagesPerDay.map { it.second / days }
 
-        messagesPerDay.plot(
-                x = { LocalDateTime.ofEpochSecond(it.first, 0, ZoneOffset.UTC).format(dateTimeFormatter) },
-                y = {it.second / days})
-                .geomLine()
-                .title("Messages", guild, user, filter)
-                .xLabel("Time")
-                .yLabel("Messages")
-                .styleAndSend(textChannel, svg)
+        // val dateTimeFormatter = DateTimeFormatter.ISO_DATE
+
+        val plot = XYChartBuilder().apply {
+            title = title("Messages", guild, user, filter)
+        }
+                .xAxisTitle("Time")
+                .yAxisTitle("Messages")
+                .build()
+
+        plot.addSeries("Messages", dates, messages)
+        plot.styleAndSend(textChannel, svg)
     }
 
     fun channelDistribution(user: User?, guild: Guild, textChannel: TextChannel, svg: Boolean) {
@@ -150,33 +150,70 @@ class StatisticsService {
             channelCounts[it] = channelCounts[it]?.plus(1) ?: 1
         }
 
-        channelCounts
-                .map { Pair<String, Int>(guild.getTextChannelById(it.key)!!.name, it.value) }
-                .filter { it.second > 10 }
-                .plot(x = { it.first }, y = {it.second})
-                .geomCol()
-                .title("Channel Distribution", guild, user)
-                .xLabel("Channel")
-                .yLabel("Message Count")
-                .coordFlip()
-                .styleAndSend(textChannel, svg)
+        val sortedChannelCounts = channelCounts.toList()
+                .sortedByDescending { it.second }
+
+        val channelNames = sortedChannelCounts.map { guild.getTextChannelById(it.first)?.name ?: it.first.toString() }
+        val channelMessageCounts = sortedChannelCounts.map { it.second }
+
+        val plot = CategoryChartBuilder().apply {
+            title = title("Channel Distribution", guild, user)
+        }
+                .xAxisTitle("Channel")
+                .yAxisTitle("Messages")
+                .build()
+
+        plot.addSeries("Messages", channelNames, channelMessageCounts)
+        plot.styleAndSend(textChannel, svg)
     }
 
-    private fun GGPlot.styleAndSend(textChannel: TextChannel, svg: Boolean) {
-        val file = File("${botConfig.dateTimeFormatter.format(LocalDateTime.now())}.${if (svg) "svg" else "png"}")
+    private fun CategoryChart.styleAndSend(textChannel: TextChannel, svg: Boolean) {
+        this.styler.apply {
+            xAxisLabelRotation = -90
+            xAxisLabelAlignmentVertical = Styler.TextAlignment.Right
+        }
 
-        this.themeBW()
-                .save(file, Dimension(1920, 1080))
+        styleAndSend(this, textChannel, svg)
+    }
+
+    private fun XYChart.styleAndSend(textChannel: TextChannel, svg: Boolean) {
+        this.styler.apply {
+            markerSize = 5
+        }
+
+        styleAndSend(this, textChannel, svg)
+    }
+
+    private fun <T: Styler, U: Series> styleAndSend(chart: Chart<T, U>, textChannel: TextChannel, svg: Boolean) {
+        val location = botConfig.dateTimeFormatter.format(LocalDateTime.now()) + if (svg) {".svg"} else { ".png" }
+
+        chart.styler.apply {
+            legendPosition = Styler.LegendPosition.InsideNE
+            chartBackgroundColor = Color.WHITE //(214, 214, 214)
+            plotBackgroundColor = Color.WHITE
+        }
+
+        if (svg) {
+            VectorGraphicsEncoder.saveVectorGraphic(chart,
+                    location,
+                    VectorGraphicsEncoder.VectorGraphicsFormat.SVG)
+        }
+        else {
+            BitmapEncoder.saveBitmap(chart, location, BitmapEncoder.BitmapFormat.PNG)
+        }
+
+        val file = File(location)
 
         textChannel.sendFile(file).complete()
 
         file.delete()
     }
 
-    private fun GGPlot.title(title: String, guild: Guild, user: User?=null, filter: String=""): GGPlot {
+    private fun title(title: String, guild: Guild, user: User?=null, filter: String=""): String {
         val of = user?.name ?: guild.name
-        val containing = if (filter == "") "" else  " containing $filter"
+        val containing = if (filter == "") ""
+        else  " containing ${filter.replace("""\""", """\\""")}"
 
-        return this.title("$title of $of$containing")
+        return "$title of $of$containing"
     }
 }
