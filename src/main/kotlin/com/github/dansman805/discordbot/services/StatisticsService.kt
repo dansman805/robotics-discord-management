@@ -171,6 +171,7 @@ class StatisticsService {
         this.styler.apply {
             xAxisLabelRotation = -90
             xAxisLabelAlignmentVertical = Styler.TextAlignment.Right
+            legendPosition = Styler.LegendPosition.InsideNE
         }
 
         styleAndSend(this, textChannel, svg)
@@ -179,6 +180,7 @@ class StatisticsService {
     private fun XYChart.styleAndSend(textChannel: TextChannel, svg: Boolean) {
         this.styler.apply {
             markerSize = 5
+            legendPosition = Styler.LegendPosition.InsideNW
         }
 
         styleAndSend(this, textChannel, svg)
@@ -188,9 +190,9 @@ class StatisticsService {
         val location = botConfig.dateTimeFormatter.format(LocalDateTime.now()) + if (svg) {".svg"} else { ".png" }
 
         chart.styler.apply {
-            legendPosition = Styler.LegendPosition.InsideNE
             chartBackgroundColor = Color.WHITE //(214, 214, 214)
             plotBackgroundColor = Color.WHITE
+            decimalPattern = "#,###,###,###,###"
         }
 
         if (svg) {
@@ -205,6 +207,8 @@ class StatisticsService {
         val file = File(location)
 
         textChannel.sendFile(file).complete()
+
+        Thread.sleep(1000)
 
         file.delete()
     }
