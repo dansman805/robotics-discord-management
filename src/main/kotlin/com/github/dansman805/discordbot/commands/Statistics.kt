@@ -125,7 +125,7 @@ fun statistics(statistics: StatisticsService) = commands {
                             .random()
             }
 
-                context.respond(wordsToReturn.joinToString(separator = " ")
+                context.respond(wordsToReturn.joinToString(prefix = "\\", separator = " ")
             )
         }
     }
