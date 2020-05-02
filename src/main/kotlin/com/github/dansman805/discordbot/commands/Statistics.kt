@@ -98,7 +98,7 @@ fun statistics(statistics: StatisticsService) = commands {
     }
 
     command("Markov") {
-        description = "Uses Markov chains to generate text in the style of a given user"
+        description = "Uses a Markov chain to generate text in the style of a given user"
         requiresGuild = true
 
         execute(UserArg(allowsBot = true), IntegerArg.makeOptional { 10 }, WordArg.makeNullableOptional()) { context ->
