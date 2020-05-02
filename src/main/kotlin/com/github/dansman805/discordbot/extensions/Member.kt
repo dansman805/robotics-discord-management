@@ -1,11 +1,16 @@
 package com.github.dansman805.discordbot.extensions
 
 import com.github.dansman805.discordbot.botConfig
+import com.github.dansman805.discordbot.db
+import com.github.dansman805.discordbot.entities.Messages
 import me.aberrantfox.kjdautils.api.dsl.embed
+import me.liuwj.ktorm.dsl.eq
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import java.time.OffsetDateTime
-import kotlin.math.min
+import com.github.dansman805.discordbot.toDate
+import com.github.dansman805.discordbot.toDateTime
+import me.liuwj.ktorm.entity.*
 
 fun Member.toEmbed() = embed {
     val m = this@toEmbed
@@ -69,11 +74,26 @@ fun Member.toEmbed() = embed {
     //}
 }
 
-fun Member.firstJoin(joinLogs: List<Message>): OffsetDateTime =
-        minOf(
-            this.timeJoined,
-            joinLogs
-                .sortedBy { it.timeCreated }
-                .firstOrNull { it.isMentioned(this, Message.MentionType.USER) }
-                ?.timeCreated ?: this.timeJoined
-        )
+var x = 0
+
+private val messageSequence by lazy { db.sequenceOf(Messages) }
+
+fun Member.firstJoin(joinLogs: List<Message>): OffsetDateTime{
+    println(x)
+    x++
+
+    return minOf(
+            minOf(
+                    this.timeJoined,
+                    joinLogs
+                            .sortedBy { it.timeCreated }
+                            .firstOrNull { it.isMentioned(this, Message.MentionType.USER) }
+                            ?.timeCreated ?: this.timeJoined
+            ),
+            messageSequence
+                    .filter { it.guildId eq this.guild.idLong }
+                    .filter { it.authorId eq this.idLong }
+                    .minBy { it.epochSecond }
+                    ?.toDateTime() ?: this.timeJoined
+    )
+}
