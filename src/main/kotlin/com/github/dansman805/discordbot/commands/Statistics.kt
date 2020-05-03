@@ -125,7 +125,8 @@ fun statistics(statistics: StatisticsService) = commands {
                             .random()
             }
 
-                context.respond(wordsToReturn.joinToString(prefix = "\\", separator = " ")
+                context.respond(wordsToReturn.joinToString(prefix = "\u200B", separator = " ")
+                // The prefix is made to be an zero-width space to prevent bot commands from executing
             )
         }
     }
