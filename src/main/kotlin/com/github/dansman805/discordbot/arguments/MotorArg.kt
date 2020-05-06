@@ -18,6 +18,7 @@ object MotorArg : ArgumentType<Motor>() {
             "neverest".toLowerCase() -> ArgumentResult.Success(Motor.neverRestBare)
             "yellowjacket".toLowerCase() -> ArgumentResult.Success(Motor.neverRestBare)
             "revhdhex".toLowerCase() -> ArgumentResult.Success(Motor.neverRestBare)
+            "nr".toLowerCase() -> ArgumentResult.Success(Motor.neverRestBare)
             else -> ArgumentResult.Error("Expected a motor, got $arg")
         }
     }

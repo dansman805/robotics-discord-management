@@ -8,9 +8,12 @@ import me.liuwj.ktorm.dsl.eq
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import java.time.OffsetDateTime
-import com.github.dansman805.discordbot.toDate
 import com.github.dansman805.discordbot.toDateTime
+import me.aberrantfox.kjdautils.extensions.jda.message
+import me.aberrantfox.kjdautils.extensions.jda.toMember
 import me.liuwj.ktorm.entity.*
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.MessageChannel
 
 fun Member.toEmbed() = embed {
     val m = this@toEmbed
@@ -96,4 +99,33 @@ fun Member.firstJoin(joinLogs: List<Message>): OffsetDateTime{
                     .minBy { it.epochSecond }
                     ?.toDateTime() ?: this.timeJoined
     )
+}
+
+fun Member.ifHasPermission(messageChannel: MessageChannel,
+                           vararg permissions: Permission,
+                           thingToRunIfPermissionPresent: () -> Unit) {
+    var shouldRun = true
+
+    if (!this.hasPermission(permissions.toList())) {
+        val permissionsLacked = permissions.filter { !this.hasPermission(it) }
+
+        messageChannel.message("${this.effectiveName}, " +
+                "you do not have ${permissionsLacked.joinToString(separator = " or ") { it.toString() }} permissions.")
+
+        shouldRun = false
+    }
+
+    val selfMember = this.jda.selfUser.toMember(this.guild)
+
+    if (selfMember?.hasPermission(permissions.toList()) == false) {
+        val permissionsLacked = permissions.filter { !selfMember.hasPermission(it) }
+
+        messageChannel.message(selfMember.effectiveName +
+                " does not have ${permissionsLacked.joinToString(separator = " or ") { it.toString() }} permissions.")
+
+        shouldRun = false
+    }
+    if (shouldRun) {
+        thingToRunIfPermissionPresent()
+    }
 }

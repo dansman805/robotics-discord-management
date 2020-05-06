@@ -1,5 +1,6 @@
 package com.github.dansman805.discordbot.commands
 
+import com.github.dansman805.discordbot.extensions.ifHasPermission
 import com.github.dansman805.discordbot.services.TeamService
 import com.github.dansman805.discordbot.services.WikipediaSummaryService
 import kotlinx.coroutines.*

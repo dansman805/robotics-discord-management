@@ -23,8 +23,10 @@ import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import java.awt.Color
+import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import kotlin.system.measureTimeMillis
@@ -52,8 +54,8 @@ fun modLog(actor: Member, action: String, target: User, reason: String, embedCol
         }
 
         field {
-            name = "Timestamp"
-            value = botConfig.dateTimeFormatter.format(LocalDateTime.now())
+            name = "Timestamp (UTC)"
+            value = botConfig.dateTimeFormatter.format(OffsetDateTime.now(Clock.systemUTC()))
         }
     }
 
@@ -83,9 +85,13 @@ fun modCommands() = commands {
     command("Ban") {
         description = "Bans someone in the guild for a given reason"
 
+        requiresGuild = true
+
         execute(MemberArg, reasonArg) {
-            modLog(it.author.toMember(it.guild!!)!!, "Banned", it.args.first.user, it.args.second)
-            it.guild?.ban(it.args.first, 0)?.complete()
+            it.author.toMember(it.guild!!)!!.ifHasPermission(it.channel, Permission.BAN_MEMBERS) {
+                it.guild?.ban(it.args.first, 0)?.complete()
+                modLog(it.author.toMember(it.guild!!)!!, "Banned", it.args.first.user, it.args.second)
+            }
         }
     }
 

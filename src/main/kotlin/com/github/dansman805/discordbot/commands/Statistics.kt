@@ -97,6 +97,22 @@ fun statistics(statistics: StatisticsService) = commands {
         }
     }
 
+    command("HourDistribution", "Hourly") {
+        requiresGuild = true
+
+        description = "Graphs the amount of messages hourly in each channel for either a provided user or the guild."
+
+        execute(UserArg(allowsBot = true).makeNullableOptional(), WordArg.makeOptional { "" }, BooleanArg.makeOptional { false }) {
+            statistics.hourlyMessages(
+                    it.args.first,
+                    it.guild!!,
+                    it.message.textChannel,
+                    it.args.second.replace("`", ""),
+                    it.args.third
+            )
+        }
+    }
+
     command("Markov") {
         description = "Uses a Markov chain to generate text in the style of a given user"
         requiresGuild = true

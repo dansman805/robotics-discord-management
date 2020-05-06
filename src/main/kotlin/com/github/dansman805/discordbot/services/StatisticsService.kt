@@ -136,6 +136,45 @@ class StatisticsService {
         plot.styleAndSend(textChannel, svg)
     }
 
+    fun hourlyMessages(user: User?, guild: Guild, textChannel: TextChannel, filter: String, svg: Boolean) {
+        val pattern = filter.toRegex(RegexOption.IGNORE_CASE)
+
+        val sequence = if (user == null) {
+            sequence
+                    .sortedBy { it.epochSecond }
+                    .filter { it.guildId eq guild.idLong }
+                    .asKotlinSequence()
+                    .filter { pattern.containsMatchIn(it.contentRaw) }
+        }
+        else {
+            sequence
+                    .sortedBy { it.epochSecond }
+                    .filter { it.guildId eq guild.idLong }
+                    .filter { it.authorId eq user.idLong }
+                    .asKotlinSequence()
+                    .filter { pattern.containsMatchIn(it.contentRaw) }
+        }
+
+        val hours = IntArray(24)
+        val calendar = Calendar.getInstance()
+
+        sequence.forEach {
+            calendar.time = it.epochSecond.toDate()
+
+            hours[calendar.get(Calendar.HOUR_OF_DAY)] += 1
+        }
+
+        val plot = CategoryChartBuilder().apply {
+            title = title("Message Time", guild, user)
+        }
+                .xAxisTitle("Hour of Day")
+                .yAxisTitle("Messages")
+                .build()
+
+        plot.addSeries("Messages", hours.indices.asSequence().toList().toIntArray(), hours)
+        plot.styleAndSend(textChannel, svg)
+    }
+
     fun channelDistribution(user: User?, guild: Guild, textChannel: TextChannel, svg: Boolean) {
         val messages = if (user == null) {
             sequence
@@ -216,7 +255,7 @@ class StatisticsService {
     private fun title(title: String, guild: Guild, user: User?=null, filter: String=""): String {
         val of = user?.name ?: guild.name
         val containing = if (filter == "") ""
-        else  " containing ${filter.replace("""\""", """\\""")}"
+        else  " containing $filter"
 
         return "$title of $of$containing"
     }
