@@ -173,7 +173,7 @@ class StatisticsService {
                 .build()
 
         plot.addSeries("Messages", hours.indices.asSequence().toList().toIntArray(), hours)
-        plot.styleAndSend(textChannel, svg)
+        plot.styleAndSend(textChannel, svg, false)
     }
 
     fun channelDistribution(user: User?, guild: Guild, textChannel: TextChannel, svg: Boolean) {
@@ -204,7 +204,7 @@ class StatisticsService {
                 .build()
 
         plot.addSeries("Messages", channelNames, channelMessageCounts)
-        plot.styleAndSend(textChannel, svg, false)
+        plot.styleAndSend(textChannel, svg)
     }
 
     private fun CategoryChart.styleAndSend(textChannel: TextChannel, svg: Boolean, showLegend: Boolean=true) {

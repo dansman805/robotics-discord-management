@@ -4,6 +4,7 @@ import com.github.dansman805.discordbot.arguments.GearRatioArg
 import com.github.dansman805.discordbot.arguments.MotorArg
 import com.github.dansman805.discordbot.dataclasses.Drivetrain
 import com.github.dansman805.discordbot.dataclasses.Motor
+import com.github.dansman805.discordbot.extensions.safe
 import kotlinx.serialization.ImplicitReflectionSerializer
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.internal.arguments.DoubleArg
@@ -26,7 +27,9 @@ fun jvnCommands() = commands {
         description = "Provides statistics about a motor"
 
         execute(MotorArg) {
-            it.respond(it.args.first.genEmbed())
+            it.safe {
+                it.respond(it.args.first.genEmbed())
+            }
         }
     }
 
@@ -34,9 +37,11 @@ fun jvnCommands() = commands {
         description = "Provides statistics about a motor when geared"
 
         execute(GearRatioArg, MotorArg.makeOptional(Motor.neverRestBare)) {
-            val motor = it.args.second.gear(it.args.first)
+            it.safe {
+                val motor = it.args.second.gear(it.args.first)
 
-            it.respond(motor.genEmbed("Geared Motor Statistics"))
+                it.respond(motor.genEmbed("Geared Motor Statistics"))
+            }
         }
     }
 
@@ -44,10 +49,12 @@ fun jvnCommands() = commands {
         description = "Provides statistics about a drivetrain with a wheel diameter, gear ratio and optionally a motor"
 
         execute(GearRatioArg, DoubleArg, MotorArg.makeOptional(Motor.neverRestBare)) {
-            val motor = it.args.third.gear(it.args.first)
-            val drivetrain = Drivetrain(motor, it.args.second)
+            it.safe {
+                val motor = it.args.third.gear(it.args.first)
+                val drivetrain = Drivetrain(motor, it.args.second)
 
-            it.respond(drivetrain.toEmbed())
+                it.respond(drivetrain.toEmbed())
+            }
         }
     }
 }

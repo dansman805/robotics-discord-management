@@ -88,9 +88,11 @@ fun modCommands() = commands {
         requiresGuild = true
 
         execute(MemberArg, reasonArg) {
-            it.author.toMember(it.guild!!)!!.ifHasPermission(it.channel, Permission.BAN_MEMBERS) {
-                it.guild?.ban(it.args.first, 0)?.complete()
-                modLog(it.author.toMember(it.guild!!)!!, "Banned", it.args.first.user, it.args.second)
+            it.safe {
+                it.author.toMember(it.guild!!)!!.ifHasPermission(it.channel, Permission.BAN_MEMBERS) {
+                    it.guild?.ban(it.args.first, 0)?.complete()
+                    modLog(it.author.toMember(it.guild!!)!!, "Banned", it.args.first.user, it.args.second)
+                }
             }
         }
     }
@@ -99,8 +101,10 @@ fun modCommands() = commands {
         description = "Unbans someone in the guild"
 
         execute(UserArg, reasonArg) {
-            modLog(it.author.toMember(it.guild!!)!!, "Unbanned", it.args.first, it.args.second)
-            it.guild?.unban(it.args.first)?.complete()
+            it.safe {
+                modLog(it.author.toMember(it.guild!!)!!, "Unbanned", it.args.first, it.args.second)
+                it.guild?.unban(it.args.first)?.complete()
+            }
         }
     }
 
@@ -108,8 +112,10 @@ fun modCommands() = commands {
         description = "Kick someone in the guild for a given reason"
 
         execute(MemberArg, reasonArg) {
-            modLog(it.author.toMember(it.guild!!)!!, "Kicked", it.args.first.user, it.args.second)
-            it.guild?.kick(it.args.first, it.args.second)?.complete()
+            it.safe {
+                modLog(it.author.toMember(it.guild!!)!!, "Kicked", it.args.first.user, it.args.second)
+                it.guild?.kick(it.args.first, it.args.second)?.complete()
+            }
         }
     }
 
@@ -117,7 +123,9 @@ fun modCommands() = commands {
         description = "Warn an user"
 
         execute(UserArg, SentenceArg) {
-            modLog(it.author.toMember(it.guild!!)!!, "Warned", it.args.first, it.args.second)
+            it.safe {
+                modLog(it.author.toMember(it.guild!!)!!, "Warned", it.args.first, it.args.second)
+            }
         }
     }
 
@@ -126,13 +134,15 @@ fun modCommands() = commands {
         requiresGuild = true
 
         execute {
-            for (roleConfig in botConfig.membershipRoles) {
-                it.guild?.getRoleByName(roleConfig.name)?.delete()
+            it.safe {
+                for (roleConfig in botConfig.membershipRoles) {
+                    it.guild?.getRoleByName(roleConfig.name)?.delete()
                             ?.reason("Requested by: ${it.author.fullName()}")
                             ?.complete()
-            }
+                }
 
-            it.respond("Done")
+                it.respond("Done")
+            }
         }
     }
 
@@ -141,68 +151,70 @@ fun modCommands() = commands {
         requiresGuild = true
 
         execute {
-            val roles = hashMapOf<MembershipTimeRole, Role>()
+            it.safe {
+                val roles = hashMapOf<MembershipTimeRole, Role>()
 
-            for (roleConfig in botConfig.membershipRoles) {
-                val roleByName = it.guild?.getRoleByName(roleConfig.name)
+                for (roleConfig in botConfig.membershipRoles) {
+                    val roleByName = it.guild?.getRoleByName(roleConfig.name)
 
-                if (roleByName == null) {
-                    val newRole = it.guild!!.createRole().complete()
-                    newRole.manager.setName(roleConfig.name)
-                            .setColor(roleConfig.color)
-                            .setHoisted(false)
-                            .setPermissions(it.guild!!.publicRole.permissions)
-                            .revokePermissions(Permission.MESSAGE_MENTION_EVERYONE)
-                            .complete()
+                    if (roleByName == null) {
+                        val newRole = it.guild!!.createRole().complete()
+                        newRole.manager.setName(roleConfig.name)
+                                .setColor(roleConfig.color)
+                                .setHoisted(false)
+                                .setPermissions(it.guild!!.publicRole.permissions)
+                                .revokePermissions(Permission.MESSAGE_MENTION_EVERYONE)
+                                .complete()
 
-                    roles[roleConfig] = newRole
-                } else {
-                    roles[roleConfig] = roleByName
-                }
-            }
-
-            val sortedRoles = roles.toSortedMap(
-                    compareBy<MembershipTimeRole> { it.requiredTimeInDays })
-
-            val timesPerMember = mutableListOf<Long>()
-
-            val joinedLogs = it.author.jda.getTextChannelById(botConfig.joinedLogId)!!.allMessages()
-
-            runBlocking {
-                for (member in it.guild!!.members) {
-                    launch {
-                        timesPerMember.add(measureTimeMillis {
-                            val daysOnGuild = ChronoUnit.DAYS.between(
-                                    member.firstJoin(joinedLogs).toLocalDate(), LocalDate.now())
-
-                            val correctRole = sortedRoles
-                                    .toList()
-                                    .findLast { daysOnGuild >= it.first.requiredTimeInDays }
-
-                            if (correctRole?.second !in member.roles) {
-                                println("Assigning ${member.effectiveName}: ${correctRole?.second?.name}, days on guild: $daysOnGuild")
-
-                                for (role in sortedRoles) {
-                                    if (role.value in member.roles) {
-                                        try {
-                                            it.guild!!.removeRoleFromMember(member, role.value).complete()
-                                        } catch (e: Exception) {
-                                            // ignore this, this means the role has already been removed
-                                        }
-                                    }
-                                }
-
-                                if (correctRole != null) {
-                                    it.guild!!.addRoleToMember(member, correctRole.second).complete()
-                                }
-                            }
-                        })
+                        roles[roleConfig] = newRole
+                    } else {
+                        roles[roleConfig] = roleByName
                     }
                 }
-            }
 
-            it.respond("Done")
-            println("Took ${timesPerMember.max()} ms per user max, ${timesPerMember.min()} minimum, and ${timesPerMember.average()} average")
+                val sortedRoles = roles.toSortedMap(
+                        compareBy<MembershipTimeRole> { it.requiredTimeInDays })
+
+                val timesPerMember = mutableListOf<Long>()
+
+                val joinedLogs = it.author.jda.getTextChannelById(botConfig.joinedLogId)!!.allMessages()
+
+                runBlocking {
+                    for (member in it.guild!!.members) {
+                        launch {
+                            timesPerMember.add(measureTimeMillis {
+                                val daysOnGuild = ChronoUnit.DAYS.between(
+                                        member.firstJoin(joinedLogs).toLocalDate(), LocalDate.now())
+
+                                val correctRole = sortedRoles
+                                        .toList()
+                                        .findLast { daysOnGuild >= it.first.requiredTimeInDays }
+
+                                if (correctRole?.second !in member.roles) {
+                                    println("Assigning ${member.effectiveName}: ${correctRole?.second?.name}, days on guild: $daysOnGuild")
+
+                                    for (role in sortedRoles) {
+                                        if (role.value in member.roles) {
+                                            try {
+                                                it.guild!!.removeRoleFromMember(member, role.value).complete()
+                                            } catch (e: Exception) {
+                                                // ignore this, this means the role has already been removed
+                                            }
+                                        }
+                                    }
+
+                                    if (correctRole != null) {
+                                        it.guild!!.addRoleToMember(member, correctRole.second).complete()
+                                    }
+                                }
+                            })
+                        }
+                    }
+                }
+
+                it.respond("Done")
+                println("Took ${timesPerMember.max()} ms per user max, ${timesPerMember.min()} minimum, and ${timesPerMember.average()} average")
+            }
         }
     }
 
@@ -216,40 +228,42 @@ fun modCommands() = commands {
         description = "Shows the number of users with a given role or all the roles"
 
         execute(RoleArg.makeNullableOptional()) {
-            if (it.args.first != null) {
-                val role = it.args.first!!
+            it.safe {
+                if (it.args.first != null) {
+                    val role = it.args.first!!
 
-                it.respond(embed {
-                    title = "${role.name} Information"
-                    color = role.color
+                    it.respond(embed {
+                        title = "${role.name} Information"
+                        color = role.color
 
-                    field {
-                        name = "Members with the Role"
-                        value = role.memberCount().toString()
-                        inline = true
-                    }
+                        field {
+                            name = "Members with the Role"
+                            value = role.memberCount().toString()
+                            inline = true
+                        }
 
-                    field {
-                        name = "Color"
-                        value = role.color?.toHexString() ?: "N/A"
-                        inline = true
-                    }
-                })
-            }
-            else {
-                val roleList = it.guild?.roles?.sortedByDescending { it.memberCount() } ?: emptyList()
-
-                val embeds = MutableList(roleList.size) {EmbedBuilder()}
-
-                for (i in embeds.indices) {
-                    val embed = embeds[i / 25]
-                    val role = roleList[i]
-
-                    embed.addField(role.name, role.memberCount().toString(), true)
+                        field {
+                            name = "Color"
+                            value = role.color?.toHexString() ?: "N/A"
+                            inline = true
+                        }
+                    })
                 }
+                else {
+                    val roleList = it.guild?.roles?.sortedByDescending { it.memberCount() } ?: emptyList()
 
-                for (embed in embeds) {
-                    it.respond(embed.build())
+                    val embeds = MutableList(roleList.size) {EmbedBuilder()}
+
+                    for (i in embeds.indices) {
+                        val embed = embeds[i / 25]
+                        val role = roleList[i]
+
+                        embed.addField(role.name, role.memberCount().toString(), true)
+                    }
+
+                    for (embed in embeds) {
+                        it.respond(embed.build())
+                    }
                 }
             }
         }
@@ -258,54 +272,12 @@ fun modCommands() = commands {
     command("MemberFirstJoin") {
         requiresGuild = true
         execute(MemberArg) {
-            it.respond(botConfig.dateTimeFormatter.format(
-                    it.args.first.firstJoin(it.author.jda.getTextChannelById(botConfig.joinedLogId)!!.allMessages())
+            it.safe {
+                it.respond(botConfig.dateTimeFormatter.format(
+                        it.args.first.firstJoin(it.author.jda.getTextChannelById(botConfig.joinedLogId)!!.allMessages())
                 )
-            )
-        }
-    }
-
-    /*command("AddFirstTimesToDB") {
-        requiresGuild = true
-        execute {
-            val joinedLogs = it.author.jda.getTextChannelById(botConfig.joinedLogID)!!.allMessages()
-
-            transaction {
-                for (member in it.guild!!.members) {
-                    User.new {
-                        idLong = member.user.idLong
-                        initialJoinUnixTime = member.firstJoin(joinedLogs).toEpochSecond()
-                    }
-                }
+                )
             }
         }
-    }*/
-}
-
-class EditDeleteManager {
-    @Subscribe
-    fun onMessageDelete(event: MessageDeleteEvent) {
-        /*val message = event.channel.history.getMessageById(event.messageIdLong)
-
-        println(message!!.contentRaw)
-
-        event.jda.getTextChannelById(editDeleteChannelID)?.sendMessage(
-                embed {
-                    title = "Message Deletion"
-                    color = Color(0xff0000)
-                    timeStamp = LocalDateTime.now()
-
-
-                    field {
-                        name = "Author"
-                        value = message.author.fullName()
-                    }
-                }
-        )?.complete()*/
-    }
-
-    @Subscribe
-    fun onMessageUpdate(event: MessageUpdateEvent) {
-
     }
 }

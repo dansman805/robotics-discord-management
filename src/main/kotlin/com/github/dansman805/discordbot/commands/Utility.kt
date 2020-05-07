@@ -1,6 +1,7 @@
 package com.github.dansman805.discordbot.commands
 
 import com.github.dansman805.discordbot.extensions.ifHasPermission
+import com.github.dansman805.discordbot.extensions.safe
 import com.github.dansman805.discordbot.services.TeamService
 import com.github.dansman805.discordbot.services.WikipediaSummaryService
 import kotlinx.coroutines.*
@@ -48,46 +49,49 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
     command("Ping") {
         description = "Responds with Pong! (As well as the server name, and the time it takes the bot to respond)"
         execute {
-            it.respond("""Pong! We're in the **${it.guild?.name}** server.
+            it.safe {
+                it.respond("""Pong! We're in the **${it.guild?.name}** server.
                 |Took ${it.channel.jda.restPing.complete()} ms to respond.""".trimMargin())
+            }
         }
     }
 
     command("SetNickname", "SetNick", "Nickname", "Nick") {
         description = "Allows a member to change their nickname."
         execute(SentenceArg) {
-            val nickToChangeTo = it.args.first
-            val truncatedNick =
-                    if (nickToChangeTo.length > 32) nickToChangeTo.substring(0..31)
-                    else nickToChangeTo
+            it.safe {
+                val nickToChangeTo = it.args.first
+                val truncatedNick =
+                        if (nickToChangeTo.length > 32) nickToChangeTo.substring(0..31)
+                        else nickToChangeTo
 
-            try {
-                it.message.member?.modifyNickname(truncatedNick)?.complete()
-            } catch (e: HierarchyException) {
-                it.respond("Your top role is the same as or higher than mine!")
-                return@execute
+                try {
+                    it.message.member?.modifyNickname(truncatedNick)?.complete()
+                    it.respond("Nick successfully changed to $truncatedNick")
+
+                    if (nickToChangeTo.length > 32) {
+                        it.respond("Warning: truncated nickname to 32 characters.")
+                    }
+                }
+                catch (e: HierarchyException) {
+                    it.respond("Your top role is the same as or higher than mine!")
+                }
             }
-
-            it.respond("Nick succesfully changed to $truncatedNick")
-
-            if (nickToChangeTo.length > 32) {
-                it.respond("Warning: truncated nickname to 32 characters.")
-            }
-
-
         }
     }
 
     command("TheOrangeAlliance", "TOA") {
         description = "Provides data on a given FTC team from The Orange Alliance"
 
-        execute(TeamNumberArg) { event ->
-            try {
-                event.respond(
-                        teamService.getFTCTeam(event.args.component1()).genEmbed()
-                )
-            } catch (e: Exception) {
-                event.respond("This team does not have any data on it yet, or it does not exist!")
+        execute(TeamNumberArg) {
+            it.safe {
+                try {
+                    it.respond(
+                            teamService.getFTCTeam(it.args.component1()).genEmbed()
+                    )
+                } catch (e: Exception) {
+                    it.respond("This team does not have any data on it yet, or it does not exist!")
+                }
             }
         }
 
@@ -96,13 +100,15 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
     command("TheBlueAlliance", "TBA") {
         description = "Provides data on a given FRC team from The Blue Alliance"
 
-        execute(TeamNumberArg) { event ->
-            try {
-                event.respond(
-                        teamService.getFRCTeam(event.args.component1()).genEmbed()
-                )
-            } catch (e: Exception) {
-                event.respond("This team does not have any data on it yet, or it does not exist!")
+        execute(TeamNumberArg) {
+            it.safe {
+                try {
+                    it.respond(
+                            teamService.getFRCTeam(it.args.component1()).genEmbed()
+                    )
+                } catch (e: Exception) {
+                    it.respond("This team does not have any data on it yet, or it does not exist!")
+                }
             }
         }
     }
@@ -111,12 +117,14 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
         description = "Provides the Wikipedia summary on a given topic"
 
         execute(SentenceArg) {
-            val summary = wikipediaSummaryService.getSummary(it.args.first)
+            it.safe {
+                val summary = wikipediaSummaryService.getSummary(it.args.first)
 
-            if (summary?.toEmbed() != null) {
-                it.respond(summary.toEmbed())
-            } else {
-                it.respond("No Wikipedia article found!")
+                if (summary?.toEmbed() != null) {
+                    it.respond(summary.toEmbed())
+                } else {
+                    it.respond("No Wikipedia article found!")
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ package com.github.dansman805.discordbot.commands
 
 import com.github.dansman805.discordbot.db
 import com.github.dansman805.discordbot.entities.Messages
+import com.github.dansman805.discordbot.extensions.safe
 import com.github.dansman805.discordbot.services.StatisticsService
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.annotation.Precondition
@@ -42,12 +43,14 @@ fun statistics(statistics: StatisticsService) = commands {
                 WordArg.makeOptional { "" },
                 IntegerArg.makeOptional { 7 },
                 BooleanArg.makeOptional { false }) {
-            statistics.cumulativeMessages(it.args.first, it.guild!!,
-                    it.message.textChannel,
-                    it.args.second.replace("`", ""),
-                    it.args.third,
-                    it.args.fourth
-            )
+            it.safe {
+                statistics.cumulativeMessages(it.args.first, it.guild!!,
+                        it.message.textChannel,
+                        it.args.second.replace("`", ""),
+                        it.args.third,
+                        it.args.fourth
+                )
+            }
         }
     }
 
@@ -60,12 +63,14 @@ fun statistics(statistics: StatisticsService) = commands {
                 WordArg.makeOptional { "" },
                 IntegerArg.makeOptional { 7 },
                 BooleanArg.makeOptional { false }) {
-            statistics.messages(it.args.first, it.guild!!,
-                    it.message.textChannel,
-                    it.args.second.replace("`", ""),
-                    it.args.third,
-                    it.args.fourth
-            )
+            it.safe {
+                statistics.messages(it.args.first, it.guild!!,
+                        it.message.textChannel,
+                        it.args.second.replace("`", ""),
+                        it.args.third,
+                        it.args.fourth
+                )
+            }
         }
     }
 
@@ -77,13 +82,15 @@ fun statistics(statistics: StatisticsService) = commands {
         execute(IntegerArg.makeOptional { 10 },
                 WordArg.makeOptional { "" },
                 BooleanArg.makeOptional { false }) {
-            statistics.messageRanking(
-                    it.guild!!,
-                    it.message.textChannel,
-                    it.args.second.replace("`", ""),
-                    it.args.first,
-                    it.args.third
-            )
+            it.safe {
+                statistics.messageRanking(
+                        it.guild!!,
+                        it.message.textChannel,
+                        it.args.second.replace("`", ""),
+                        it.args.first,
+                        it.args.third
+                )
+            }
         }
     }
 
