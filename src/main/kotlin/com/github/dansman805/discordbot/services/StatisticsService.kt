@@ -166,6 +166,7 @@ class StatisticsService {
 
         val plot = CategoryChartBuilder().apply {
             title = title("Message Time", guild, user)
+
         }
                 .xAxisTitle("Hour of Day")
                 .yAxisTitle("Messages")
@@ -203,14 +204,15 @@ class StatisticsService {
                 .build()
 
         plot.addSeries("Messages", channelNames, channelMessageCounts)
-        plot.styleAndSend(textChannel, svg)
+        plot.styleAndSend(textChannel, svg, false)
     }
 
-    private fun CategoryChart.styleAndSend(textChannel: TextChannel, svg: Boolean) {
+    private fun CategoryChart.styleAndSend(textChannel: TextChannel, svg: Boolean, showLegend: Boolean=true) {
         this.styler.apply {
             xAxisLabelRotation = -90
             xAxisLabelAlignmentVertical = Styler.TextAlignment.Right
             legendPosition = Styler.LegendPosition.InsideNE
+            isLegendVisible = showLegend
         }
 
         styleAndSend(this, textChannel, svg)
