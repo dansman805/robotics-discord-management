@@ -7,11 +7,13 @@ import com.github.dansman805.discordbot.entities.Messages
 import com.github.dansman805.discordbot.extensions.safe
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.annotation.Precondition
+import me.aberrantfox.kjdautils.api.dsl.Conversation
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.extensions.jda.toMember
 import me.aberrantfox.kjdautils.internal.command.Fail
 import me.aberrantfox.kjdautils.internal.command.Pass
 import me.aberrantfox.kjdautils.internal.command.precondition
+import me.aberrantfox.kjdautils.internal.services.ConversationService
 import me.liuwj.ktorm.dsl.eq
 import me.liuwj.ktorm.entity.*
 import net.dv8tion.jda.api.Permission
@@ -33,7 +35,7 @@ fun isDeveloper() = precondition {
 }
 
 @CommandSet(developerCategoryName)
-fun developerCommands() = commands {
+fun developerCommands(conversationService: ConversationService) = commands {
     fun getLatestMessage(channel: TextChannel): Long  = try {
         channel.latestMessageIdLong
     }

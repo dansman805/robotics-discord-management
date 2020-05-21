@@ -50,6 +50,7 @@
 | Markov                   | User, (Integer), (Word)              | Uses a Markov chain to generate text in the style of a given user                             |
 | MessageRanking           | (Integer), (Word), (Boolean)         | Graphs the ranking of members by messages of the server with an optional filter.              |
 | Messages                 | (User), (Word), (Integer), (Boolean) | Graphs the amount of messages for either a provided user or the guild.                        |
+| WordsPerMessage          | (Reversed), (SVG)                    | Graphs the amount of words per message each member of a guild.                                |
 
 ## Utility
 | Commands                             | Arguments   | Description                                                                                |

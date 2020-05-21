@@ -15,32 +15,15 @@ fun<T: ArgumentContainer> CommandEvent<T>.safe(thingToRun: (CommandEvent<T>) -> 
         thingToRun(this)
     }
     catch (e: Exception) {
-        val allowableCharactersInMessage = DISCORD_MESSAGE_CHARACTER_LIMIT - CODE_BLOCK_DELIMITER.length * 2
-
         val sw = StringWriter()
         val pw = PrintWriter(sw)
 
-        e.printStackTrace(pw)
-
-        val errorMessage = sw.toString()
-        val sections = mutableListOf<String>()
-
-        for (i in errorMessage.indices step allowableCharactersInMessage) {
-            sections.add(
-                    errorMessage.substring(
-                            i until
-                                    minOf(i+allowableCharactersInMessage,
-                                            errorMessage.length-1)
-                    )
-            )
-        }
-
-        sections.forEach {
-            this.channel.sendMessage(CODE_BLOCK_DELIMITER + it + CODE_BLOCK_DELIMITER).submit()
-        }
+        this.channel.sendMessage(CODE_BLOCK_DELIMITER + e.message + CODE_BLOCK_DELIMITER).submit()
 
         botConfig.developerIds.forEach {
             this.channel.sendMessage("<@$it>").submit()
         }
+
+        throw e
     }
 }

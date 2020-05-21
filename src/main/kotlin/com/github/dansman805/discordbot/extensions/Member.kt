@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import java.time.OffsetDateTime
 import com.github.dansman805.discordbot.toDateTime
-import me.aberrantfox.kjdautils.extensions.jda.message
 import me.aberrantfox.kjdautils.extensions.jda.toMember
 import me.liuwj.ktorm.entity.*
 import net.dv8tion.jda.api.Permission
@@ -70,11 +69,6 @@ fun Member.toEmbed() = embed {
         name = "Icon URL"
         value = iconUrl
     }
-
-    //field {
-    //    name = "Days Since First Message on Guild"
-    //    value = daysSinceFirstMessage().toString()
-    //}
 }
 
 var x = 0
@@ -109,8 +103,9 @@ fun Member.ifHasPermission(messageChannel: MessageChannel,
     if (!this.hasPermission(permissions.toList())) {
         val permissionsLacked = permissions.filter { !this.hasPermission(it) }
 
-        messageChannel.message("${this.effectiveName}, " +
+        messageChannel.sendMessage("${this.effectiveName}, " +
                 "you do not have ${permissionsLacked.joinToString(separator = " or ") { it.toString() }} permissions.")
+                .complete()
 
         shouldRun = false
     }
@@ -120,8 +115,9 @@ fun Member.ifHasPermission(messageChannel: MessageChannel,
     if (selfMember?.hasPermission(permissions.toList()) == false) {
         val permissionsLacked = permissions.filter { !selfMember.hasPermission(it) }
 
-        messageChannel.message(selfMember.effectiveName +
+        messageChannel.sendMessage(selfMember.effectiveName +
                 " does not have ${permissionsLacked.joinToString(separator = " or ") { it.toString() }} permissions.")
+                .complete()
 
         shouldRun = false
     }

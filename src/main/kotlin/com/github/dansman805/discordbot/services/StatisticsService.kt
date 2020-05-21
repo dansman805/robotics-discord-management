@@ -5,6 +5,7 @@ import com.github.dansman805.discordbot.db
 import com.github.dansman805.discordbot.entities.Messages
 import com.github.dansman805.discordbot.toDate
 import me.aberrantfox.kjdautils.api.annotation.Service
+import me.aberrantfox.kjdautils.extensions.jda.toMember
 import me.liuwj.ktorm.dsl.*
 import me.liuwj.ktorm.entity.*
 import net.dv8tion.jda.api.entities.Guild
@@ -129,10 +130,10 @@ class StatisticsService {
             title = title("Messages", guild, user, filter)
         }
                 .xAxisTitle("Time")
-                .yAxisTitle("Messages")
+                .yAxisTitle("Messages / Day")
                 .build()
 
-        plot.addSeries("Messages", dates, messages)
+        plot.addSeries("Messages / Day", dates, messages)
         plot.styleAndSend(textChannel, svg)
     }
 
@@ -176,12 +177,47 @@ class StatisticsService {
         plot.styleAndSend(textChannel, svg, false)
     }
 
-    fun channelDistribution(user: User?, guild: Guild, textChannel: TextChannel, svg: Boolean) {
-        val messages = if (user == null) {
-            sequence
+    fun wordsPerMessage(guild: Guild, textChannel: TextChannel, reverse: Boolean, svg: Boolean) {
+        val userMessageCount = HashMap<Long, Int>()
+
+        sequence.asKotlinSequence().iterator().forEachRemaining {
+            if (it.contentRaw.isNotEmpty()) {
+                val words = it.contentRaw.split(" ").size
+                userMessageCount[it.authorId] = userMessageCount[it.authorId]?.plus(words) ?: words
+            }
+        }
+
+        val averageWordsPerMessage = userMessageCount.map { entry ->
+            entry.key to entry.value / sequence.count { it.authorId eq entry.key }.toDouble()
+        }.toMap().toList()
+
+        val neededAverageWordsPerMessage = if (reverse) {
+            averageWordsPerMessage.toList().sortedBy { it.second }
         }
         else {
-            sequence.filter { it.authorId eq user.idLong }
+            averageWordsPerMessage.toList().sortedByDescending { it.second }
+        }.subList(0, 50)
+
+        val plot = CategoryChartBuilder().apply {
+            title = title("Words / Message Rankings", guild)
+        }
+                .xAxisTitle("Channel")
+                .yAxisTitle("Average Words / Message")
+                .build()
+
+        plot.addSeries("Words / Message",
+                neededAverageWordsPerMessage.map { guild.jda.getUserById(it.first)?.name ?: it.first.toString() },
+                neededAverageWordsPerMessage.map { it.second })
+        plot.styleAndSend(textChannel, svg)
+    }
+
+    fun channelDistribution(user: User?, guild: Guild, textChannel: TextChannel, svg: Boolean) {
+        val messages = if (user == null) {
+            sequence.filter { it.guildId eq guild.idLong }
+
+        }
+        else {
+            sequence.filter { it.guildId eq guild.idLong }.filter { it.authorId eq user.idLong }
         }
 
         val channelCounts = HashMap<Long, Int>()

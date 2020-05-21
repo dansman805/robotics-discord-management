@@ -9,7 +9,8 @@ import me.aberrantfox.kjdautils.internal.command.ConsumptionType
 object MotorArg : ArgumentType<Motor>() {
     override val name = "Motor"
     override val consumptionType = ConsumptionType.Single
-    override val examples = arrayListOf("[Stock393, HighSpeed393, NeveRest, YellowJacket, or RevHDHex]")
+    override fun generateExamples(event: CommandEvent<*>) =
+            arrayListOf("[Stock393, HighSpeed393, NeveRest, YellowJacket, or RevHDHex]")
 
     override fun convert(arg: String, args: List<String>, event: CommandEvent<*>): ArgumentResult<Motor> {
         return when (arg.toLowerCase()) {

@@ -20,7 +20,7 @@ open class TeamNumberArg : ArgumentType<Int>() {
     companion object : TeamNumberArg()
 
     override val name = "Team Number"
-    override val examples = arrayListOf("11115")
+    override fun generateExamples(event: CommandEvent<*>) = arrayListOf("11115")
     override val consumptionType = ConsumptionType.Single
 
     override fun convert(arg: String, args: List<String>, event: CommandEvent<*>): ArgumentResult<Int> {

@@ -25,7 +25,7 @@ fun canUseStatistics() = precondition {
         return@precondition Pass
     }
 
-    if (it.message.member?.hasPermission(Permission.BAN_MEMBERS) == true) {
+    if (it.message.member?.hasPermission(Permission.MANAGE_ROLES) == true) {
         return@precondition Pass
     } else {
         return@precondition Fail("You must be a mod (or above) to run this command!")
@@ -91,6 +91,19 @@ fun statistics(statistics: StatisticsService) = commands {
                         it.args.third
                 )
             }
+        }
+    }
+
+    command("WordsPerMessage") {
+        requiresGuild = true
+
+        description = "Graphs the amount of words per message each member of a guild."
+
+        execute(BooleanArg("Reversed").makeOptional { false },
+                BooleanArg("SVG").makeOptional { false }) {
+            statistics.wordsPerMessage(it.guild!!,
+                    it.guild!!.jda.getTextChannelById(it.message.channel.idLong)!!,
+                    it.args.first, it.args.second)
         }
     }
 

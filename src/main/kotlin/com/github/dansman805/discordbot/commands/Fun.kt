@@ -6,7 +6,6 @@ import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.api.dsl.embed
 import me.aberrantfox.kjdautils.extensions.jda.hasRole
-import me.aberrantfox.kjdautils.extensions.jda.message
 import me.aberrantfox.kjdautils.internal.arguments.MemberArg
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -63,9 +62,7 @@ fun funCommands() = commands {
                 val deleteEvents = arrayListOf<RestAction<Void>>()
 
                 turnMessages.forEach { messageContent ->
-                    it.channel.message(messageContent) { message: Message ->
-                        deleteEvents.add(message.delete())
-                    }
+                    deleteEvents.add(it.channel.sendMessage(messageContent).complete().delete())
                     Thread.sleep(1500)
                 }
 
