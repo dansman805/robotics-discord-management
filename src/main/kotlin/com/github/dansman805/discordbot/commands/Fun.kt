@@ -117,8 +117,6 @@ fun funCommands() = commands {
                     outputImage.setPixel(inputPixel)
                     println("Set ${inputPixel.x}, ${inputPixel.y} to ${inputPixel.toColor()}")
                 }
-
-                println("${bolbPixel.x}, ${bolbPixel.y}: ${bolbPixel.toColor().red}, ${bolbPixel.toColor().green}, ${bolbPixel.toColor().blue}")
             }
 
             val outputFile = File("${botConfig.dateTimeFormatter.format(LocalDateTime.now())}.png")
