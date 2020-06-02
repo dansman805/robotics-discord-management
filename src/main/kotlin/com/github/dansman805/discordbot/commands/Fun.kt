@@ -1,15 +1,19 @@
 package com.github.dansman805.discordbot.commands
 
+import com.github.dansman805.discordbot.botConfig
 import com.github.dansman805.discordbot.extensions.safe
-import com.google.common.eventbus.Subscribe
+import com.sksamuel.scrimage.ImmutableImage
+import com.sksamuel.scrimage.MutableImage
+import com.sksamuel.scrimage.color.RGBColor
+import com.sksamuel.scrimage.nio.PngWriter
+import com.twelvemonkeys.imageio.ImageWriterBase
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.dsl.command.commands
 import me.aberrantfox.kjdautils.api.dsl.embed
-import me.aberrantfox.kjdautils.extensions.jda.hasRole
-import me.aberrantfox.kjdautils.internal.arguments.MemberArg
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import me.aberrantfox.kjdautils.internal.arguments.*
 import net.dv8tion.jda.api.requests.RestAction
+import java.awt.Color
+import java.io.File
 import java.time.LocalDateTime
 import kotlin.math.max
 import kotlin.random.Random
@@ -92,6 +96,40 @@ fun funCommands() = commands {
                     deleteEvent.complete()
                 }
             }
+        }
+    }
+
+    command("Bolb") {
+        execute (FileArg, BooleanArg("Bolbways").makeOptional { false }) {
+            val bolbImage = if (it.args.second) ImmutableImage.loader().fromFile(File("bolbways-face.png"))
+                else ImmutableImage.loader().fromFile(File("bolb-face.png"))
+            val inputImage = ImmutableImage.loader().fromFile(it.args.first).scaleTo(bolbImage.width, bolbImage.height)
+
+            var outputImage = bolbImage.blank()
+
+            inputImage.forEach { inputPixel ->
+                val bolbPixel = bolbImage.pixel(inputPixel.x, inputPixel.y)
+
+                if (bolbPixel.toColor() == Color.BLACK) {
+                    outputImage.setColor(inputPixel.x, inputPixel.y, RGBColor(47, 47, 47))
+                }
+                else if (bolbPixel.toColor().toAWT() == Color.WHITE) {
+                    outputImage.setPixel(inputPixel)
+                    println("Set ${inputPixel.x}, ${inputPixel.y} to ${inputPixel.toColor()}")
+                }
+
+                println("${bolbPixel.x}, ${bolbPixel.y}: ${bolbPixel.toColor().red}, ${bolbPixel.toColor().green}, ${bolbPixel.toColor().blue}")
+            }
+
+            val outputFile = File("${botConfig.dateTimeFormatter.format(LocalDateTime.now())}.png")
+            outputImage.output(PngWriter(), outputFile)
+
+            it.channel.sendFile(outputFile).complete()
+
+            Thread.sleep(1000)
+
+            it.args.first.delete()
+            outputFile.delete()
         }
     }
 }

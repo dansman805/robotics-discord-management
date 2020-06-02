@@ -52,6 +52,8 @@ dependencies {
     implementation("me.liuwj.ktorm:ktorm-core:2.7.2")
 
     implementation("org.knowm.xchart:xchart:3.6.2")
+
+    implementation("com.sksamuel.scrimage:scrimage-core:4.0.4")
 }
 
 application {

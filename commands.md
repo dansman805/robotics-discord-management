@@ -12,9 +12,10 @@
 | Refresh        | <none>    | No Description Provider |
 
 ## Fun
-| Commands | Arguments | Description                        |
-| -------- | --------- | ---------------------------------- |
-| Fight    | Member    | Start a fight with another member. |
+| Commands | Arguments        | Description                        |
+| -------- | ---------------- | ---------------------------------- |
+| Bolb     | File, (Bolbways) | No Description Provider            |
+| Fight    | Member           | Start a fight with another member. |
 
 ## Info
 | Commands                                                                  | Arguments | Description                                       |
