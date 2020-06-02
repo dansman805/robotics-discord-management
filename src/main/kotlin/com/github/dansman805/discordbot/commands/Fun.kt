@@ -6,6 +6,7 @@ import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.MutableImage
 import com.sksamuel.scrimage.color.RGBColor
 import com.sksamuel.scrimage.nio.PngWriter
+import com.sksamuel.scrimage.pixels.Pixel
 import com.twelvemonkeys.imageio.ImageWriterBase
 import me.aberrantfox.kjdautils.api.annotation.CommandSet
 import me.aberrantfox.kjdautils.api.dsl.command.commands
@@ -110,12 +111,11 @@ fun funCommands() = commands {
             inputImage.forEach { inputPixel ->
                 val bolbPixel = bolbImage.pixel(inputPixel.x, inputPixel.y)
 
-                if (bolbPixel.toColor() == Color.BLACK) {
-                    outputImage.setColor(inputPixel.x, inputPixel.y, RGBColor(47, 47, 47))
+                if (bolbPixel.toColor().toAWT() == Color.BLACK) {
+                    outputImage.setColor(inputPixel.x, inputPixel.y, RGBColor(47, 47, 47, 255))
                 }
                 else if (bolbPixel.toColor().toAWT() == Color.WHITE) {
                     outputImage.setPixel(inputPixel)
-                    println("Set ${inputPixel.x}, ${inputPixel.y} to ${inputPixel.toColor()}")
                 }
             }
 
