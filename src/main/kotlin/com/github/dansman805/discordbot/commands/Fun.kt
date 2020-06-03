@@ -4,6 +4,9 @@ import com.github.dansman805.discordbot.botConfig
 import com.github.dansman805.discordbot.extensions.safe
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.MutableImage
+import com.sksamuel.scrimage.ScaleMethod
+import com.sksamuel.scrimage.angles.Degrees
+import com.sksamuel.scrimage.angles.Radians
 import com.sksamuel.scrimage.color.RGBColor
 import com.sksamuel.scrimage.nio.PngWriter
 import com.sksamuel.scrimage.pixels.Pixel
@@ -16,7 +19,10 @@ import net.dv8tion.jda.api.requests.RestAction
 import java.awt.Color
 import java.io.File
 import java.time.LocalDateTime
+import kotlin.math.PI
 import kotlin.math.max
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 @CommandSet("Fun")
@@ -102,28 +108,24 @@ fun funCommands() = commands {
 
     command("Bolb") {
         execute (FileArg,
-                ChoiceArg("Bolb Type", "Bolb", "Bolbolb", "Bolbways").makeOptional { "Bolb" },
+                ChoiceArg("Bolb Type", "Bolb", "Bolbolb", "Bolbways",
+                        "Squishbolbolb", "Tallbolb").makeOptional { "Bolb" },
                 HexColorArg("Face Color").makeOptional(Color(47, 47, 47))) {
             var bolbImage = ImmutableImage.loader().fromFile("bolbs/" +
                     when (it.args.second) {
-                        "Bolb" -> "bolb-face"
-                        "Bolbolb" -> "bolb-face"
                         "Bolbways" -> "bolbways-face"
-                        else -> {
-                            it.respond("Invalid Bolb Type!")
-                            return@execute
-                        }
+                        else -> "bolb-face"
                     } + ".png"
             )
 
 
-            if (it.args.second == "Bolbolb") {
+            if (it.args.second == "Bolbolb" || it.args.second == "Squishbolbolb") {
                 bolbImage = bolbImage.flipX()
             }
 
             val inputImage = ImmutableImage.loader().fromFile(it.args.first).scaleTo(bolbImage.width, bolbImage.height)
 
-            val outputImage = bolbImage.blank()
+            var outputImage = bolbImage.blank()
             val outputFile = File("${botConfig.dateTimeFormatter.format(LocalDateTime.now())}.png")
 
             it.safe {
@@ -138,6 +140,20 @@ fun funCommands() = commands {
                     }
                     else {
                         outputImage.setColor(inputPixel.x, inputPixel.y, RGBColor.fromAwt(Color(0, 0, 0, 0)))
+                    }
+                }
+
+                outputImage = when (it.args.second) {
+                    "Squishbolbolb" -> {
+                        outputImage.scaleToHeight(outputImage.height/4, ScaleMethod.Bicubic,
+                                false)
+                    }
+                    "Tallbolb" -> {
+                        outputImage.scaleToWidth(outputImage.width/4, ScaleMethod.Bicubic,
+                                false)
+                    }
+                    else -> {
+                        outputImage
                     }
                 }
 
