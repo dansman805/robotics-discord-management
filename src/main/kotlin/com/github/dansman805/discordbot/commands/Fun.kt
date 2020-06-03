@@ -101,28 +101,50 @@ fun funCommands() = commands {
     }
 
     command("Bolb") {
-        execute (FileArg, BooleanArg("Bolbways").makeOptional { false }) {
-            val bolbImage = if (it.args.second) ImmutableImage.loader().fromFile(File("bolbways-face.png"))
-                else ImmutableImage.loader().fromFile(File("bolb-face.png"))
-            val inputImage = ImmutableImage.loader().fromFile(it.args.first).scaleTo(bolbImage.width, bolbImage.height)
+        execute (FileArg,
+                ChoiceArg("Bolb Type", "Bolb", "Bolbolb", "Bolbways").makeOptional { "Bolb" },
+                HexColorArg("Face Color").makeOptional(Color(47, 47, 47))) {
+            var bolbImage = ImmutableImage.loader().fromFile("bolbs/" +
+                    when (it.args.second) {
+                        "Bolb" -> "bolb-face"
+                        "Bolbolb" -> "bolb-face"
+                        "Bolbways" -> "bolbways-face"
+                        else -> {
+                            it.respond("Invalid Bolb Type!")
+                            return@execute
+                        }
+                    } + ".png"
+            )
 
-            var outputImage = bolbImage.blank()
 
-            inputImage.forEach { inputPixel ->
-                val bolbPixel = bolbImage.pixel(inputPixel.x, inputPixel.y)
-
-                if (bolbPixel.toColor().toAWT() == Color.BLACK) {
-                    outputImage.setColor(inputPixel.x, inputPixel.y, RGBColor(47, 47, 47, 255))
-                }
-                else if (bolbPixel.toColor().toAWT() == Color.WHITE) {
-                    outputImage.setPixel(inputPixel)
-                }
+            if (it.args.second == "Bolbolb") {
+                bolbImage = bolbImage.flipX()
             }
 
-            val outputFile = File("${botConfig.dateTimeFormatter.format(LocalDateTime.now())}.png")
-            outputImage.output(PngWriter(), outputFile)
+            val inputImage = ImmutableImage.loader().fromFile(it.args.first).scaleTo(bolbImage.width, bolbImage.height)
 
-            it.channel.sendFile(outputFile).complete()
+            val outputImage = bolbImage.blank()
+            val outputFile = File("${botConfig.dateTimeFormatter.format(LocalDateTime.now())}.png")
+
+            it.safe {
+                inputImage.forEach { inputPixel ->
+                    val bolbPixel = bolbImage.pixel(inputPixel.x, inputPixel.y)
+
+                    if (bolbPixel.toColor().toAWT() == Color.BLACK) {
+                        outputImage.setColor(inputPixel.x, inputPixel.y, RGBColor.fromAwt(it.args.third))
+                    }
+                    else if (bolbPixel.toColor().toAWT() == Color.WHITE) {
+                        outputImage.setPixel(inputPixel)
+                    }
+                    else {
+                        outputImage.setColor(inputPixel.x, inputPixel.y, RGBColor.fromAwt(Color(0, 0, 0, 0)))
+                    }
+                }
+
+                outputImage.output(PngWriter(), outputFile)
+
+                it.channel.sendFile(outputFile).complete()
+            }
 
             Thread.sleep(1000)
 
