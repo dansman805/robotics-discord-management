@@ -9,7 +9,6 @@ interface MessageDatabaseEntry : Entity<MessageDatabaseEntry> {
     var guildId: Long?
     var channelId: Long
     var authorId: Long
-    var contentRaw: String
     var epochSecond: Long
 
     companion object {
@@ -18,7 +17,6 @@ interface MessageDatabaseEntry : Entity<MessageDatabaseEntry> {
             guildId = m.guild.idLong
             channelId = m.channel.idLong
             authorId = m.author.idLong
-            contentRaw = m.contentRaw
             epochSecond = m.timeCreated.toEpochSecond()
         }
     }
@@ -29,6 +27,5 @@ object Messages : Table<MessageDatabaseEntry>("messages") {
     val guildId by long("guild_id").bindTo { it.guildId }
     val channelId by long("channel_id").bindTo { it.channelId }
     val authorId by long("author_id").bindTo { it.authorId }
-    val contentRaw by varchar("content_raw").bindTo { it.contentRaw }
     val epochSecond by long("epoch_second").bindTo { it.epochSecond }
 }

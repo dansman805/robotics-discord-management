@@ -36,15 +36,12 @@ class StatisticsService {
     private fun epochSecondToTimeSpanEpochSecond(epochSecond: Long, days: Int) =
             (floor(epochSecond/secondsInTimeSpan(days).toDouble()) * secondsInTimeSpan(days)).toLong()
 
-    private fun messagesPerDay(user: User?, guild: Guild, filter: String, days: Int): SortedMap<Long, Int> {
-        val pattern = filter.toRegex(RegexOption.IGNORE_CASE)
+    private fun messagesPerDay(user: User?, guild: Guild, days: Int): SortedMap<Long, Int> {
 
         val sequence = if (user == null) {
             sequence
                     .sortedBy { it.epochSecond }
-                    .filter { it.guildId eq guild.idLong }
                     .asKotlinSequence()
-                    .filter { pattern.containsMatchIn(it.contentRaw) }
         }
         else {
             sequence
@@ -52,7 +49,6 @@ class StatisticsService {
                     .filter { it.guildId eq guild.idLong }
                     .filter { it.authorId eq user.idLong }
                     .asKotlinSequence()
-                    .filter { pattern.containsMatchIn(it.contentRaw) }
         }
 
         val instanceOfDays = HashMap<Long, Int>()
@@ -64,8 +60,8 @@ class StatisticsService {
         return instanceOfDays.toSortedMap()
     }
 
-    fun cumulativeMessages(user: User?, guild: Guild, textChannel: TextChannel, filter: String, days: Int, svg: Boolean) {
-        val messagesPerDay = messagesPerDay(user, guild, filter, days).map { Pair<Long, Int>(it.key, it.value) }
+    fun cumulativeMessages(user: User?, guild: Guild, textChannel: TextChannel, days: Int, svg: Boolean) {
+        val messagesPerDay = messagesPerDay(user, guild, days).map { Pair<Long, Int>(it.key, it.value) }
 
         val cumulativeMessagesPerDay = messagesPerDay.toMutableList()
 
@@ -80,7 +76,7 @@ class StatisticsService {
         }
 
         val plot = XYChartBuilder().apply {
-            title = title("Cumulative Messages", guild, user, filter)
+            title = title("Cumulative Messages", guild, user)
         }
                 .xAxisTitle("Time")
                 .yAxisTitle("Messages")
@@ -90,12 +86,9 @@ class StatisticsService {
         plot.styleAndSend(textChannel, svg)
     }
 
-    fun messageRanking(guild: Guild, textChannel: TextChannel, filter: String, topN: Int, svg: Boolean) {
-        val pattern = filter.toRegex(RegexOption.IGNORE_CASE)
+    fun messageRanking(guild: Guild, textChannel: TextChannel, topN: Int, svg: Boolean) {
         val messages = sequence.filter { it.guildId eq guild.idLong }
                 .asKotlinSequence()
-                .filter { pattern.containsMatchIn(it.contentRaw) }
-
         val messageCounts = HashMap<Long, Int>()
 
         messages.map { it.authorId }.forEach {
@@ -108,7 +101,7 @@ class StatisticsService {
         val topNMessageCounts = topNPeople.map { it.second }
 
         val plot = CategoryChartBuilder().apply {
-            title = title("Message Authors", guild, filter = filter)
+            title = title("Message Authors", guild)
         }
                 .xAxisTitle("Author")
                 .yAxisTitle("Message Count")
@@ -118,8 +111,8 @@ class StatisticsService {
         plot.styleAndSend(textChannel, svg)
     }
 
-    fun messages(user: User?, guild: Guild, textChannel: TextChannel, filter: String, days: Int, svg: Boolean) {
-        val messagesPerDay = messagesPerDay(user, guild, filter, days).toList()
+    fun messages(user: User?, guild: Guild, textChannel: TextChannel, days: Int, svg: Boolean) {
+        val messagesPerDay = messagesPerDay(user, guild, days).toList()
 
         val dates = messagesPerDay.map { it.first.toDate() }
         val messages = messagesPerDay.map { it.second / days }
@@ -127,7 +120,7 @@ class StatisticsService {
         // val dateTimeFormatter = DateTimeFormatter.ISO_DATE
 
         val plot = XYChartBuilder().apply {
-            title = title("Messages", guild, user, filter)
+            title = title("Messages", guild, user)
         }
                 .xAxisTitle("Time")
                 .yAxisTitle("Messages / Day")
@@ -137,15 +130,12 @@ class StatisticsService {
         plot.styleAndSend(textChannel, svg)
     }
 
-    fun hourlyMessages(user: User?, guild: Guild, textChannel: TextChannel, filter: String, svg: Boolean) {
-        val pattern = filter.toRegex(RegexOption.IGNORE_CASE)
-
+    fun hourlyMessages(user: User?, guild: Guild, textChannel: TextChannel, svg: Boolean) {
         val sequence = if (user == null) {
             sequence
                     .sortedBy { it.epochSecond }
                     .filter { it.guildId eq guild.idLong }
                     .asKotlinSequence()
-                    .filter { pattern.containsMatchIn(it.contentRaw) }
         }
         else {
             sequence
@@ -153,7 +143,6 @@ class StatisticsService {
                     .filter { it.guildId eq guild.idLong }
                     .filter { it.authorId eq user.idLong }
                     .asKotlinSequence()
-                    .filter { pattern.containsMatchIn(it.contentRaw) }
         }
 
         val hours = IntArray(24)
@@ -175,40 +164,6 @@ class StatisticsService {
 
         plot.addSeries("Messages", hours.indices.asSequence().toList().toIntArray(), hours)
         plot.styleAndSend(textChannel, svg, false)
-    }
-
-    fun wordsPerMessage(guild: Guild, textChannel: TextChannel, reverse: Boolean, svg: Boolean) {
-        val userMessageCount = HashMap<Long, Int>()
-
-        sequence.asKotlinSequence().iterator().forEachRemaining {
-            if (it.contentRaw.isNotEmpty()) {
-                val words = it.contentRaw.split(" ").size
-                userMessageCount[it.authorId] = userMessageCount[it.authorId]?.plus(words) ?: words
-            }
-        }
-
-        val averageWordsPerMessage = userMessageCount.map { entry ->
-            entry.key to entry.value / sequence.count { it.authorId eq entry.key }.toDouble()
-        }.toMap().toList()
-
-        val neededAverageWordsPerMessage = if (reverse) {
-            averageWordsPerMessage.toList().sortedBy { it.second }
-        }
-        else {
-            averageWordsPerMessage.toList().sortedByDescending { it.second }
-        }.subList(0, 50)
-
-        val plot = CategoryChartBuilder().apply {
-            title = title("Words / Message Rankings", guild)
-        }
-                .xAxisTitle("Channel")
-                .yAxisTitle("Average Words / Message")
-                .build()
-
-        plot.addSeries("Words / Message",
-                neededAverageWordsPerMessage.map { guild.jda.getUserById(it.first)?.name ?: it.first.toString() },
-                neededAverageWordsPerMessage.map { it.second })
-        plot.styleAndSend(textChannel, svg)
     }
 
     fun channelDistribution(user: User?, guild: Guild, textChannel: TextChannel, svg: Boolean) {
@@ -290,11 +245,9 @@ class StatisticsService {
         file.delete()
     }
 
-    private fun title(title: String, guild: Guild, user: User?=null, filter: String=""): String {
+    private fun title(title: String, guild: Guild, user: User?=null): String {
         val of = user?.name ?: guild.name
-        val containing = if (filter == "") ""
-        else  " containing $filter"
 
-        return "$title of $of$containing"
+        return "$title of $of"
     }
 }
