@@ -4,20 +4,23 @@ import com.github.dansman805.discordbot.db
 import com.github.dansman805.discordbot.entities.Messages
 import com.github.dansman805.discordbot.extensions.safe
 import com.github.dansman805.discordbot.services.StatisticsService
-import me.aberrantfox.kjdautils.api.annotation.CommandSet
-import me.aberrantfox.kjdautils.api.annotation.Precondition
-import me.aberrantfox.kjdautils.api.dsl.command.commands
-import me.aberrantfox.kjdautils.internal.arguments.*
-import me.aberrantfox.kjdautils.internal.command.Fail
-import me.aberrantfox.kjdautils.internal.command.Pass
-import me.aberrantfox.kjdautils.internal.command.precondition
+import me.jakejmattson.kutils.api.annotations.CommandSet
+import me.jakejmattson.kutils.api.annotations.Precondition
+import me.jakejmattson.kutils.api.arguments.BooleanArg
+import me.jakejmattson.kutils.api.arguments.IntegerArg
+import me.jakejmattson.kutils.api.arguments.UserArg
+import me.jakejmattson.kutils.api.dsl.command.commands
+import me.jakejmattson.kutils.api.dsl.preconditions.Fail
+import me.jakejmattson.kutils.api.dsl.preconditions.Pass
+import me.jakejmattson.kutils.api.dsl.preconditions.precondition
+import me.jakejmattson.kutils.internal.arguments.*
 import net.dv8tion.jda.api.Permission
 
 const val statisticsCommandCategoryName = "Statistics"
 
 @Precondition
 fun canUseStatistics() = precondition {
-    if (it.container[it.commandStruct.commandName]?.category != statisticsCommandCategoryName) {
+    if (it.container[it.command!!.names.first()]?.category != statisticsCommandCategoryName) {
         return@precondition Pass
     }
 

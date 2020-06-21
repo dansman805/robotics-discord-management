@@ -1,14 +1,13 @@
 package com.github.dansman805.discordbot.arguments
 
 import com.github.dansman805.discordbot.dataclasses.Motor
-import me.aberrantfox.kjdautils.api.dsl.command.CommandEvent
-import me.aberrantfox.kjdautils.internal.command.ArgumentResult
-import me.aberrantfox.kjdautils.internal.command.ArgumentType
-import me.aberrantfox.kjdautils.internal.command.ConsumptionType
+import me.jakejmattson.kutils.api.dsl.arguments.ArgumentResult
+import me.jakejmattson.kutils.api.dsl.arguments.ArgumentType
+import me.jakejmattson.kutils.api.dsl.command.CommandEvent
 
 object MotorArg : ArgumentType<Motor>() {
     override val name = "Motor"
-    override val consumptionType = ConsumptionType.Single
+
     override fun generateExamples(event: CommandEvent<*>) =
             arrayListOf("[Stock393, HighSpeed393, NeveRest, YellowJacket, or RevHDHex]")
 

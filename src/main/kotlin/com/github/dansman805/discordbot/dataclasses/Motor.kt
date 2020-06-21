@@ -1,14 +1,16 @@
 package com.github.dansman805.discordbot.dataclasses
 
 import com.github.dansman805.discordbot.extensions.pretty
-import me.aberrantfox.kjdautils.api.dsl.embed
+import me.jakejmattson.kutils.api.dsl.embed.embed
 
 data class Motor(val rpm: Double, val stallTorque: Double, val stallCurrent: Double, val freeCurrent: Double,
                  val power: Double) {
     fun gear(ratio: Double): Motor = this.copy(rpm = this.rpm * ratio, stallTorque = this.stallTorque / ratio)
 
     fun genEmbed(embedTitle: String = "Motor Statistics") = embed {
-        title = embedTitle
+        title {
+            text = embedTitle
+        }
 
         field {
             name = "RPM"

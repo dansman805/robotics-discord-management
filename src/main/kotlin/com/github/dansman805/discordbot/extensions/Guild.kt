@@ -1,8 +1,8 @@
 package com.github.dansman805.discordbot.extensions
 
 import com.github.dansman805.discordbot.botConfig
-import me.aberrantfox.kjdautils.api.dsl.embed
-import me.aberrantfox.kjdautils.extensions.jda.fullName
+import me.jakejmattson.kutils.api.dsl.embed.embed
+import me.jakejmattson.kutils.api.extensions.jda.fullName
 import net.dv8tion.jda.api.entities.Guild
 import java.awt.Color
 

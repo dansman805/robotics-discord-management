@@ -36,7 +36,7 @@ dependencies {
 
     // Use the Kotlin JUnit integration
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    implementation("com.gitlab.aberrantfox:KUtils:0.15.0")
+    implementation("me.jakejmattson:KUtils:0.17.1")
 
     val fuelVersion = "2.2.0"
 

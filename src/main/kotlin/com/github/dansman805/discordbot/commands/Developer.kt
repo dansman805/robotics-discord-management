@@ -5,14 +5,14 @@ import com.github.dansman805.discordbot.db
 import com.github.dansman805.discordbot.entities.MessageDatabaseEntry
 import com.github.dansman805.discordbot.entities.Messages
 import com.github.dansman805.discordbot.extensions.safe
-import me.aberrantfox.kjdautils.api.annotation.CommandSet
-import me.aberrantfox.kjdautils.api.annotation.Precondition
-import me.aberrantfox.kjdautils.api.dsl.command.commands
-import me.aberrantfox.kjdautils.extensions.jda.toMember
-import me.aberrantfox.kjdautils.internal.command.Fail
-import me.aberrantfox.kjdautils.internal.command.Pass
-import me.aberrantfox.kjdautils.internal.command.precondition
-import me.aberrantfox.kjdautils.internal.services.ConversationService
+import me.jakejmattson.kutils.api.annotations.CommandSet
+import me.jakejmattson.kutils.api.annotations.Precondition
+import me.jakejmattson.kutils.api.dsl.command.commands
+import me.jakejmattson.kutils.api.dsl.preconditions.Fail
+import me.jakejmattson.kutils.api.dsl.preconditions.Pass
+import me.jakejmattson.kutils.api.dsl.preconditions.precondition
+import me.jakejmattson.kutils.api.extensions.jda.toMember
+import me.jakejmattson.kutils.api.services.ConversationService
 import me.liuwj.ktorm.dsl.eq
 import me.liuwj.ktorm.entity.*
 import net.dv8tion.jda.api.Permission
@@ -22,7 +22,7 @@ const val developerCategoryName = "Developer"
 
 @Precondition
 fun isDeveloper() = precondition {
-    if (it.container[it.commandStruct.commandName]?.category != developerCategoryName) {
+    if (it.container[it.command!!.names.first()]?.category != developerCategoryName) {
         return@precondition Pass
     }
 

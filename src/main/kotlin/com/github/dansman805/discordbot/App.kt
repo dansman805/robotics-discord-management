@@ -1,15 +1,15 @@
 package com.github.dansman805.discordbot
 
-import me.aberrantfox.kjdautils.api.dsl.PrefixDeleteMode
-import me.aberrantfox.kjdautils.api.startBot
+import me.jakejmattson.kutils.api.dsl.configuration.startBot
 
 fun main() {
     initDb()
 
     startBot(botConfig.discordToken) {
         configure {
-            deleteMode = PrefixDeleteMode.None
-            prefix = "+"
+            prefix {
+                "+"
+            }
         }
     }
 }

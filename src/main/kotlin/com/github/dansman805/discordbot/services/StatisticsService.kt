@@ -4,8 +4,7 @@ import com.github.dansman805.discordbot.botConfig
 import com.github.dansman805.discordbot.db
 import com.github.dansman805.discordbot.entities.Messages
 import com.github.dansman805.discordbot.toDate
-import me.aberrantfox.kjdautils.api.annotation.Service
-import me.aberrantfox.kjdautils.extensions.jda.toMember
+import me.jakejmattson.kutils.api.annotations.Service
 import me.liuwj.ktorm.dsl.*
 import me.liuwj.ktorm.entity.*
 import net.dv8tion.jda.api.entities.Guild

@@ -3,13 +3,13 @@ package com.github.dansman805.discordbot.extensions
 import com.github.dansman805.discordbot.botConfig
 import com.github.dansman805.discordbot.db
 import com.github.dansman805.discordbot.entities.Messages
-import me.aberrantfox.kjdautils.api.dsl.embed
 import me.liuwj.ktorm.dsl.eq
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import java.time.OffsetDateTime
 import com.github.dansman805.discordbot.toDateTime
-import me.aberrantfox.kjdautils.extensions.jda.toMember
+import me.jakejmattson.kutils.api.dsl.embed.embed
+import me.jakejmattson.kutils.api.extensions.jda.toMember
 import me.liuwj.ktorm.entity.*
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageChannel

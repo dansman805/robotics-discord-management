@@ -3,31 +3,30 @@ package com.github.dansman805.discordbot.commands
 import com.github.dansman805.discordbot.botConfig
 import com.github.dansman805.discordbot.dataclasses.MembershipTimeRole
 import com.github.dansman805.discordbot.extensions.*
-import com.google.common.eventbus.Subscribe
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import me.aberrantfox.kjdautils.api.annotation.CommandSet
-import me.aberrantfox.kjdautils.api.annotation.Precondition
-import me.aberrantfox.kjdautils.api.dsl.command.commands
-import me.aberrantfox.kjdautils.api.dsl.embed
-import me.aberrantfox.kjdautils.extensions.jda.*
-import me.aberrantfox.kjdautils.internal.arguments.*
-import me.aberrantfox.kjdautils.internal.command.Fail
-import me.aberrantfox.kjdautils.internal.command.Pass
-import me.aberrantfox.kjdautils.internal.command.precondition
+import me.jakejmattson.kutils.api.annotations.CommandSet
+import me.jakejmattson.kutils.api.annotations.Precondition
+import me.jakejmattson.kutils.api.arguments.EveryArg
+import me.jakejmattson.kutils.api.arguments.MemberArg
+import me.jakejmattson.kutils.api.arguments.RoleArg
+import me.jakejmattson.kutils.api.arguments.UserArg
+import me.jakejmattson.kutils.api.dsl.command.commands
+import me.jakejmattson.kutils.api.dsl.embed.embed
+import me.jakejmattson.kutils.api.dsl.preconditions.Fail
+import me.jakejmattson.kutils.api.dsl.preconditions.Pass
+import me.jakejmattson.kutils.api.dsl.preconditions.precondition
+import me.jakejmattson.kutils.api.extensions.jda.fullName
+import me.jakejmattson.kutils.api.extensions.jda.getRoleByName
+import me.jakejmattson.kutils.api.extensions.jda.sendPrivateMessage
+import me.jakejmattson.kutils.api.extensions.jda.toMember
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.Role
-import net.dv8tion.jda.api.events.message.MessageDeleteEvent
-import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import java.awt.Color
 import java.time.Clock
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import kotlin.system.measureTimeMillis
 
@@ -66,7 +65,7 @@ fun modLog(actor: Member, action: String, target: User, reason: String, embedCol
 
 @Precondition
 fun isMod() = precondition {
-    if (it.container[it.commandStruct.commandName]?.category != modCommandCategoryName) {
+    if (it.container[it.command!!.names.first()]?.category != modCommandCategoryName) {
         return@precondition Pass
     }
 
@@ -77,7 +76,7 @@ fun isMod() = precondition {
     }
 }
 
-val reasonArg = SentenceArg.makeOptional("No reason provided.")
+val reasonArg = EveryArg.makeOptional("No reason provided.")
 
 //TODO: fix delDays; maybe make it an arg or something?
 @CommandSet(modCommandCategoryName)
@@ -122,7 +121,7 @@ fun modCommands() = commands {
     command("Warn") {
         description = "Warn an user"
 
-        execute(UserArg, SentenceArg) {
+        execute(UserArg, reasonArg) {
             it.safe {
                 modLog(it.author.toMember(it.guild!!)!!, "Warned", it.args.first, it.args.second)
             }
@@ -136,7 +135,9 @@ fun modCommands() = commands {
         execute {
             it.safe {
                 for (roleConfig in botConfig.membershipRoles) {
-                    it.guild?.getRoleByName(roleConfig.name)?.delete()
+
+                    it.guild?.getRoleByName(roleConfig.name)
+                            ?.delete()
                             ?.reason("Requested by: ${it.author.fullName()}")
                             ?.complete()
                 }
@@ -179,37 +180,33 @@ fun modCommands() = commands {
 
                 val joinedLogs = it.author.jda.getTextChannelById(botConfig.joinedLogId)!!.allMessages()
 
-                runBlocking {
-                    for (member in it.guild!!.members) {
-                        launch {
-                            timesPerMember.add(measureTimeMillis {
-                                val daysOnGuild = ChronoUnit.DAYS.between(
-                                        member.firstJoin(joinedLogs).toLocalDate(), LocalDate.now())
+                for (member in it.guild!!.members) {
+                    timesPerMember.add(measureTimeMillis {
+                        val daysOnGuild = ChronoUnit.DAYS.between(
+                                member.firstJoin(joinedLogs).toLocalDate(), LocalDate.now())
 
-                                val correctRole = sortedRoles
-                                        .toList()
-                                        .findLast { daysOnGuild >= it.first.requiredTimeInDays }
+                        val correctRole = sortedRoles
+                                .toList()
+                                .findLast { daysOnGuild >= it.first.requiredTimeInDays }
 
-                                if (correctRole?.second !in member.roles) {
-                                    println("Assigning ${member.effectiveName}: ${correctRole?.second?.name}, days on guild: $daysOnGuild")
+                        if (correctRole?.second !in member.roles) {
+                            println("Assigning ${member.effectiveName}: ${correctRole?.second?.name}, days on guild: $daysOnGuild")
 
-                                    for (role in sortedRoles) {
-                                        if (role.value in member.roles) {
-                                            try {
-                                                it.guild!!.removeRoleFromMember(member, role.value).complete()
-                                            } catch (e: Exception) {
-                                                // ignore this, this means the role has already been removed
-                                            }
-                                        }
-                                    }
-
-                                    if (correctRole != null) {
-                                        it.guild!!.addRoleToMember(member, correctRole.second).complete()
+                            for (role in sortedRoles) {
+                                if (role.value in member.roles) {
+                                    try {
+                                        it.guild!!.removeRoleFromMember(member, role.value).complete()
+                                    } catch (e: Exception) {
+                                        // ignore this, this means the role has already been removed
                                     }
                                 }
-                            })
+                            }
+
+                            if (correctRole != null) {
+                                it.guild!!.addRoleToMember(member, correctRole.second).complete()
+                            }
                         }
-                    }
+                    })
                 }
 
                 it.respond("Done")
@@ -233,7 +230,9 @@ fun modCommands() = commands {
                     val role = it.args.first!!
 
                     it.respond(embed {
-                        title = "${role.name} Information"
+                        title {
+                            text = "${role.name} Information"
+                        }
                         color = role.color
 
                         field {
@@ -248,11 +247,10 @@ fun modCommands() = commands {
                             inline = true
                         }
                     })
-                }
-                else {
+                } else {
                     val roleList = it.guild?.roles?.sortedByDescending { it.memberCount() } ?: emptyList()
 
-                    val embeds = MutableList(roleList.size) {EmbedBuilder()}
+                    val embeds = MutableList(roleList.size) { EmbedBuilder() }
 
                     for (i in embeds.indices) {
                         val embed = embeds[i / 25]

@@ -7,7 +7,7 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.responseObject
 import kotlinx.serialization.json.Json
-import me.aberrantfox.kjdautils.api.annotation.Service
+import me.jakejmattson.kutils.api.annotations.Service
 
 @kotlinx.serialization.ImplicitReflectionSerializer
 @kotlinx.serialization.UnstableDefault

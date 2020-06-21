@@ -2,10 +2,10 @@ package com.github.dansman805.discordbot.commands
 
 import com.github.dansman805.discordbot.extensions.safe
 import com.github.dansman805.discordbot.extensions.toEmbed
-import me.aberrantfox.kjdautils.api.annotation.CommandSet
-import me.aberrantfox.kjdautils.api.dsl.command.commands
-import me.aberrantfox.kjdautils.extensions.jda.toMember
-import me.aberrantfox.kjdautils.internal.arguments.MemberArg
+import me.jakejmattson.kutils.api.annotations.CommandSet
+import me.jakejmattson.kutils.api.arguments.MemberArg
+import me.jakejmattson.kutils.api.dsl.command.commands
+import me.jakejmattson.kutils.api.extensions.jda.toMember
 
 @CommandSet("Info")
 fun infoCommands() = commands {

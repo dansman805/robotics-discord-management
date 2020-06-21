@@ -6,9 +6,9 @@ import com.github.dansman805.discordbot.dataclasses.Drivetrain
 import com.github.dansman805.discordbot.dataclasses.Motor
 import com.github.dansman805.discordbot.extensions.safe
 import kotlinx.serialization.ImplicitReflectionSerializer
-import me.aberrantfox.kjdautils.api.annotation.CommandSet
-import me.aberrantfox.kjdautils.internal.arguments.DoubleArg
-import me.aberrantfox.kjdautils.api.dsl.command.commands
+import me.jakejmattson.kutils.api.annotations.CommandSet
+import me.jakejmattson.kutils.api.arguments.DoubleArg
+import me.jakejmattson.kutils.api.dsl.command.commands
 
 
 

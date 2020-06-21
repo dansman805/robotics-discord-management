@@ -6,15 +6,15 @@
 | (Argument) | This argument is optional. |
 
 ## Developer
-| Commands       | Arguments | Description             |
-| -------------- | --------- | ----------------------- |
-| DBMessageCount | <none>    | No Description Provider |
-| Refresh        | <none>    | No Description Provider |
+| Commands       | Arguments | Description      |
+| -------------- | --------- | ---------------- |
+| DBMessageCount | <none>    | <No Description> |
+| Refresh        | <none>    | <No Description> |
 
 ## Fun
 | Commands | Arguments                       | Description                        |
 | -------- | ------------------------------- | ---------------------------------- |
-| Bolb     | File, (Bolb Type), (Face Color) | No Description Provider            |
+| Bolb     | File, (Bolb Type), (Face Color) | <No Description>                   |
 | Fight    | Member                          | Start a fight with another member. |
 
 ## Info
@@ -36,11 +36,11 @@
 | Ban                                                            | Member, (Text) | Bans someone in the guild for a given reason                 |
 | DeleteRoles                                                    | <none>         | Delete's the time-based roles                                |
 | Kick                                                           | Member, (Text) | Kick someone in the guild for a given reason                 |
-| MemberFirstJoin                                                | Member         | No Description Provider                                      |
+| MemberFirstJoin                                                | Member         | <No Description>                                             |
 | RefreshRoles                                                   | <none>         | Refreshes the time-based roles                               |
 | RoleStatistics, RoleStat, RoleStats, RoleInformation, RoleInfo | (Role)         | Shows the number of users with a given role or all the roles |
 | Unban                                                          | User, (Text)   | Unbans someone in the guild                                  |
-| Warn                                                           | User, Text     | Warn an user                                                 |
+| Warn                                                           | User, (Text)   | Warn an user                                                 |
 
 ## Statistics
 | Commands                 | Arguments                    | Description                                                                                   |

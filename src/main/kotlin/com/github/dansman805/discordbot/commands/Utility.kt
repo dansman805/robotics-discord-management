@@ -1,18 +1,20 @@
 package com.github.dansman805.discordbot.commands
 
-import com.github.dansman805.discordbot.extensions.ifHasPermission
 import com.github.dansman805.discordbot.extensions.safe
 import com.github.dansman805.discordbot.services.TeamService
 import com.github.dansman805.discordbot.services.WikipediaSummaryService
-import kotlinx.coroutines.*
 import kotlinx.serialization.ImplicitReflectionSerializer
-import me.aberrantfox.kjdautils.api.annotation.CommandSet
-import me.aberrantfox.kjdautils.api.annotation.Precondition
-import me.aberrantfox.kjdautils.api.dsl.command.CommandEvent
-import me.aberrantfox.kjdautils.api.dsl.command.commands
-import me.aberrantfox.kjdautils.extensions.jda.toMember
-import me.aberrantfox.kjdautils.internal.arguments.SentenceArg
-import me.aberrantfox.kjdautils.internal.command.*
+import me.jakejmattson.kutils.api.annotations.CommandSet
+import me.jakejmattson.kutils.api.annotations.Precondition
+import me.jakejmattson.kutils.api.arguments.EveryArg
+import me.jakejmattson.kutils.api.dsl.arguments.ArgumentResult
+import me.jakejmattson.kutils.api.dsl.arguments.ArgumentType
+import me.jakejmattson.kutils.api.dsl.command.CommandEvent
+import me.jakejmattson.kutils.api.dsl.command.commands
+import me.jakejmattson.kutils.api.dsl.preconditions.Fail
+import me.jakejmattson.kutils.api.dsl.preconditions.Pass
+import me.jakejmattson.kutils.api.dsl.preconditions.precondition
+import me.jakejmattson.kutils.api.extensions.jda.toMember
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.exceptions.HierarchyException
 
@@ -21,7 +23,6 @@ open class TeamNumberArg : ArgumentType<Int>() {
 
     override val name = "Team Number"
     override fun generateExamples(event: CommandEvent<*>) = arrayListOf("11115")
-    override val consumptionType = ConsumptionType.Single
 
     override fun convert(arg: String, args: List<String>, event: CommandEvent<*>): ArgumentResult<Int> {
         val int = arg.toIntOrNull() ?: return ArgumentResult.Error("Expected a team number, got $arg")
@@ -31,7 +32,7 @@ open class TeamNumberArg : ArgumentType<Int>() {
 
 @Precondition
 fun hasNickPerms() = precondition {
-    if (it.commandStruct.commandName != "SetNickname") {
+    if (it.command!!.names.first() != "SetNickname") {
         return@precondition Pass
     }
 
@@ -58,7 +59,7 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
 
     command("SetNickname", "SetNick", "Nickname", "Nick") {
         description = "Allows a member to change their nickname."
-        execute(SentenceArg) {
+        execute(EveryArg) {
             it.safe {
                 val nickToChangeTo = it.args.first
                 val truncatedNick =
@@ -116,7 +117,7 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
     command("Wikipedia", "Wiki", "W") {
         description = "Provides the Wikipedia summary on a given topic"
 
-        execute(SentenceArg) {
+        execute(EveryArg) {
             it.safe {
                 val summary = wikipediaSummaryService.getSummary(it.args.first)
 

@@ -3,26 +3,21 @@ package com.github.dansman805.discordbot.commands
 import com.github.dansman805.discordbot.botConfig
 import com.github.dansman805.discordbot.extensions.safe
 import com.sksamuel.scrimage.ImmutableImage
-import com.sksamuel.scrimage.MutableImage
 import com.sksamuel.scrimage.ScaleMethod
-import com.sksamuel.scrimage.angles.Degrees
-import com.sksamuel.scrimage.angles.Radians
 import com.sksamuel.scrimage.color.RGBColor
 import com.sksamuel.scrimage.nio.PngWriter
-import com.sksamuel.scrimage.pixels.Pixel
-import com.twelvemonkeys.imageio.ImageWriterBase
-import me.aberrantfox.kjdautils.api.annotation.CommandSet
-import me.aberrantfox.kjdautils.api.dsl.command.commands
-import me.aberrantfox.kjdautils.api.dsl.embed
-import me.aberrantfox.kjdautils.internal.arguments.*
+import me.jakejmattson.kutils.api.annotations.CommandSet
+import me.jakejmattson.kutils.api.arguments.ChoiceArg
+import me.jakejmattson.kutils.api.arguments.FileArg
+import me.jakejmattson.kutils.api.arguments.HexColorArg
+import me.jakejmattson.kutils.api.arguments.MemberArg
+import me.jakejmattson.kutils.api.dsl.command.commands
+import me.jakejmattson.kutils.api.dsl.embed.embed
 import net.dv8tion.jda.api.requests.RestAction
 import java.awt.Color
 import java.io.File
 import java.time.LocalDateTime
-import kotlin.math.PI
 import kotlin.math.max
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
 import kotlin.random.Random
 
 @CommandSet("Fun")
@@ -81,7 +76,9 @@ fun funCommands() = commands {
                 val loser = players[healths.indexOf(healths.min())]
 
                 it.respond(embed {
-                    title = "Fight Result"
+                    title {
+                        text = "Fight Result"
+                    }
                     description = "Describes the result of a fight"
 
                     field {
