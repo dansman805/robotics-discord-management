@@ -152,7 +152,7 @@ fun modCommands() = commands {
         requiresGuild = true
 
         execute {
-            it.safe {
+            it.safe { event ->
                 val roles = hashMapOf<MembershipTimeRole, Role>()
 
                 for (roleConfig in botConfig.membershipRoles) {
@@ -174,93 +174,91 @@ fun modCommands() = commands {
                 }
 
                 val sortedRoles = roles.toSortedMap(
-                        compareBy<MembershipTimeRole> { it.requiredTimeInDays })
-
-                val timesPerMember = mutableListOf<Long>()
+                        compareBy { it.requiredTimeInDays })
 
                 val joinedLogs = it.author.jda.getTextChannelById(botConfig.joinedLogId)!!.allMessages()
 
-                for (member in it.guild!!.members) {
-                    timesPerMember.add(measureTimeMillis {
-                        val daysOnGuild = ChronoUnit.DAYS.between(
-                                member.firstJoin(joinedLogs).toLocalDate(), LocalDate.now())
+                it.guild!!.retrieveMembers().complete(null)
 
-                        val correctRole = sortedRoles
-                                .toList()
-                                .findLast { daysOnGuild >= it.first.requiredTimeInDays }
+                event.guild!!.retrieveMembers()
+                        .thenApply { v -> event.guild!!.getMemberCache() }
+                        .thenAccept {
+                            it.forEach { member ->
+                                val daysOnGuild = ChronoUnit.DAYS.between(
+                                        member.firstJoin(joinedLogs).toLocalDate(), LocalDate.now())
 
-                        if (correctRole?.second !in member.roles) {
-                            println("Assigning ${member.effectiveName}: ${correctRole?.second?.name}, days on guild: $daysOnGuild")
+                                val correctRole = sortedRoles
+                                        .toList()
+                                        .findLast { daysOnGuild >= it.first.requiredTimeInDays }
 
-                            for (role in sortedRoles) {
-                                if (role.value in member.roles) {
-                                    try {
-                                        it.guild!!.removeRoleFromMember(member, role.value).complete()
-                                    } catch (e: Exception) {
-                                        // ignore this, this means the role has already been removed
+                                if (correctRole?.second !in member.roles) {
+                                    println("Assigning ${member.effectiveName}: ${correctRole?.second?.name}, days on guild: $daysOnGuild")
+
+                                    for (role in sortedRoles) {
+                                        if (role.value in member.roles) {
+                                            try {
+                                                event.guild!!.removeRoleFromMember(member, role.value).submit()
+                                            } catch (e: Exception) {
+                                                // ignore this, this means the role has already been removed
+                                            }
+                                        }
+                                    }
+
+                                    if (correctRole != null) {
+                                        event.guild!!.addRoleToMember(member, correctRole.second).submit()
                                     }
                                 }
                             }
-
-                            if (correctRole != null) {
-                                it.guild!!.addRoleToMember(member, correctRole.second).complete()
-                            }
                         }
-                    })
-                }
+                        .thenRun {
+                            event.guild!!.pruneMemberCache()
+                        }
 
                 it.respond("Done")
-                println("Took ${timesPerMember.max()} ms per user max, ${timesPerMember.min()} minimum, and ${timesPerMember.average()} average")
             }
         }
-    }
 
-    /*command("GetFirstMessage") {
-        execute(MemberArg) {
-            it.args.first.
-        }
-    }*/
+        command("RoleStatistics", "RoleStat", "RoleStats", "RoleInformation", "RoleInfo") {
+            description = "Shows the number of users with a given role or all the roles"
 
-    command("RoleStatistics", "RoleStat", "RoleStats", "RoleInformation", "RoleInfo") {
-        description = "Shows the number of users with a given role or all the roles"
+            execute(RoleArg.makeNullableOptional()) {
+                it.safe {
+                    if (it.args.first != null) {
+                        val role = it.args.first!!
 
-        execute(RoleArg.makeNullableOptional()) {
-            it.safe {
-                if (it.args.first != null) {
-                    val role = it.args.first!!
+                        it.respond(embed {
+                            title {
+                                text = "${role.name} Information"
+                            }
+                            color = role.color
 
-                    it.respond(embed {
-                        title {
-                            text = "${role.name} Information"
+                            field {
+                                name = "Members with the Role"
+                                value = role.memberCount().toString()
+                                inline = true
+                            }
+
+                            field {
+                                name = "Color"
+                                value = role.color?.toHexString() ?: "N/A"
+                                inline = true
+                            }
+                        })
+                    } else {
+                        val roleList = it.guild?.roles?.sortedByDescending { it.memberCount() } ?: emptyList()
+
+                        val embeds = MutableList(roleList.size) { EmbedBuilder() }
+
+                        for (i in embeds.indices) {
+                            val embed = embeds[i / 25]
+                            val role = roleList[i]
+
+                            embed.addField(role.name, role.memberCount().toString(), true)
                         }
-                        color = role.color
 
-                        field {
-                            name = "Members with the Role"
-                            value = role.memberCount().toString()
-                            inline = true
+                        for (embed in embeds) {
+                            it.respond(embed.build())
                         }
-
-                        field {
-                            name = "Color"
-                            value = role.color?.toHexString() ?: "N/A"
-                            inline = true
-                        }
-                    })
-                } else {
-                    val roleList = it.guild?.roles?.sortedByDescending { it.memberCount() } ?: emptyList()
-
-                    val embeds = MutableList(roleList.size) { EmbedBuilder() }
-
-                    for (i in embeds.indices) {
-                        val embed = embeds[i / 25]
-                        val role = roleList[i]
-
-                        embed.addField(role.name, role.memberCount().toString(), true)
-                    }
-
-                    for (embed in embeds) {
-                        it.respond(embed.build())
                     }
                 }
             }
@@ -272,7 +270,8 @@ fun modCommands() = commands {
         execute(MemberArg) {
             it.safe {
                 it.respond(botConfig.dateTimeFormatter.format(
-                        it.args.first.firstJoin(it.author.jda.getTextChannelById(botConfig.joinedLogId)!!.allMessages())
+                        it.args.first.firstJoin(
+                                it.author.jda.getTextChannelById(botConfig.joinedLogId)!!.allMessages())
                 )
                 )
             }
