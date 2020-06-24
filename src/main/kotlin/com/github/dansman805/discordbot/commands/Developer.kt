@@ -4,15 +4,19 @@ import com.github.dansman805.discordbot.botConfig
 import com.github.dansman805.discordbot.db
 import com.github.dansman805.discordbot.entities.MessageDatabaseEntry
 import com.github.dansman805.discordbot.entities.Messages
+import com.github.dansman805.discordbot.extensions.CODE_BLOCK_DELIMITER
+import com.github.dansman805.discordbot.extensions.discordContext
 import com.github.dansman805.discordbot.extensions.safe
 import me.jakejmattson.kutils.api.annotations.CommandSet
 import me.jakejmattson.kutils.api.annotations.Precondition
+import me.jakejmattson.kutils.api.arguments.EveryArg
+import me.jakejmattson.kutils.api.dsl.command.DiscordContext
 import me.jakejmattson.kutils.api.dsl.command.commands
 import me.jakejmattson.kutils.api.dsl.preconditions.Fail
 import me.jakejmattson.kutils.api.dsl.preconditions.Pass
 import me.jakejmattson.kutils.api.dsl.preconditions.precondition
 import me.jakejmattson.kutils.api.extensions.jda.toMember
-import me.jakejmattson.kutils.api.services.ConversationService
+import me.jakejmattson.kutils.api.services.ScriptEngineService
 import me.liuwj.ktorm.dsl.eq
 import me.liuwj.ktorm.entity.*
 import net.dv8tion.jda.api.Permission
@@ -34,7 +38,7 @@ fun isDeveloper() = precondition {
 }
 
 @CommandSet(developerCategoryName)
-fun developerCommands(conversationService: ConversationService) = commands {
+fun developerCommands(scriptEngineService: ScriptEngineService) = commands {
     fun getLatestMessage(channel: TextChannel): Long  = try {
         channel.latestMessageIdLong
     }
@@ -110,4 +114,26 @@ fun developerCommands(conversationService: ConversationService) = commands {
             }
         }
     }
+
+    command("Eval") {
+        execute(EveryArg) {
+            it.safe(false) {
+                context = it.discordContext
+
+                val result = scriptEngineService.evaluateScript(
+                        """
+                import com.github.dansman805.discordbot.commands.context
+                import com.github.dansman805.discordbot.extensions.properties
+                import net.dv8tion.jda.*
+                import me.jakejmattson.kutils.api.extensions.*
+                """.trimIndent() + "\n" + it.args.first.replace("`", "")
+                )
+                it.respond(CODE_BLOCK_DELIMITER
+                        + (result ?: "Done").toString().replace("`", "")
+                        + CODE_BLOCK_DELIMITER)
+            }
+        }
+    }
 }
+
+lateinit var context: DiscordContext

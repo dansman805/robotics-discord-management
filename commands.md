@@ -9,6 +9,7 @@
 | Commands       | Arguments | Description      |
 | -------------- | --------- | ---------------- |
 | DBMessageCount | <none>    | <No Description> |
+| Eval           | Text      | <No Description> |
 | Refresh        | <none>    | <No Description> |
 
 ## Fun
