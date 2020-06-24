@@ -212,9 +212,8 @@ fun modCommands() = commands {
                         }
                         .thenRun {
                             event.guild!!.pruneMemberCache()
+                            it.respond("Done")
                         }
-
-                it.respond("Done")
             }
         }
 

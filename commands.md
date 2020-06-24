@@ -59,5 +59,6 @@
 | SetNickname, SetNick, Nickname, Nick | Text        | Allows a member to change their nickname.                                                  |
 | TheBlueAlliance, TBA                 | Team Number | Provides data on a given FRC team from The Blue Alliance                                   |
 | TheOrangeAlliance, TOA               | Team Number | Provides data on a given FTC team from The Orange Alliance                                 |
+| Vote                                 | Text        | <No Description>                                                                           |
 | Wikipedia, Wiki, W                   | Text        | Provides the Wikipedia summary on a given topic                                            |
 

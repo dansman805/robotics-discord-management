@@ -1,6 +1,7 @@
 package com.github.dansman805.discordbot.commands
 
 import com.github.dansman805.discordbot.extensions.safe
+import com.github.dansman805.discordbot.extensions.thumbUpDown
 import com.github.dansman805.discordbot.services.TeamService
 import com.github.dansman805.discordbot.services.WikipediaSummaryService
 import kotlinx.serialization.ImplicitReflectionSerializer
@@ -78,6 +79,14 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
                     it.respond("Your top role is the same as or higher than mine!")
                 }
             }
+        }
+    }
+
+    command("Vote") {
+        requiresGuild = true
+
+        execute(EveryArg) {
+            it.message.thumbUpDown()
         }
     }
 
