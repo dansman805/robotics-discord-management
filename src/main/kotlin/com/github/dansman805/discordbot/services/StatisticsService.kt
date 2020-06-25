@@ -39,6 +39,7 @@ class StatisticsService {
 
         val sequence = if (user == null) {
             sequence
+                    .filter { it.guildId eq guild.idLong }
                     .sortedBy { it.epochSecond }
                     .asKotlinSequence()
         }
