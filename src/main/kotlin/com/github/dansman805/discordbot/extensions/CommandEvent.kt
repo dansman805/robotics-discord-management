@@ -9,7 +9,7 @@ import java.io.StringWriter
 
 const val CODE_BLOCK_DELIMITER = "```"
 
-fun <T : GenericContainer> CommandEvent<T>.safe(pingDevelopers: Boolean = false, thingToRun: (CommandEvent<T>) -> Unit) {
+fun <T : GenericContainer> CommandEvent<T>.safe(pingDevelopers: Boolean = true, thingToRun: (CommandEvent<T>) -> Unit) {
     try {
         thingToRun(this)
     } catch (e: Exception) {
