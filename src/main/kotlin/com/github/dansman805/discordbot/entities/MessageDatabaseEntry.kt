@@ -10,6 +10,7 @@ interface MessageDatabaseEntry : Entity<MessageDatabaseEntry> {
     var channelId: Long
     var authorId: Long
     var epochSecond: Long
+    var contentRaw: String
 
     companion object {
         fun fromMessage(m: Message) = Entity.create<MessageDatabaseEntry>().apply {
@@ -18,6 +19,7 @@ interface MessageDatabaseEntry : Entity<MessageDatabaseEntry> {
             channelId = m.channel.idLong
             authorId = m.author.idLong
             epochSecond = m.timeCreated.toEpochSecond()
+            contentRaw = ""
         }
     }
 }
@@ -28,4 +30,5 @@ object Messages : Table<MessageDatabaseEntry>("messages") {
     val channelId by long("channel_id").bindTo { it.channelId }
     val authorId by long("author_id").bindTo { it.authorId }
     val epochSecond by long("epoch_second").bindTo { it.epochSecond }
+    val contentRaw by text("content_raw").bindTo { it.contentRaw }
 }
