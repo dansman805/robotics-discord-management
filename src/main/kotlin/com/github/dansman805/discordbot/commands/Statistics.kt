@@ -69,7 +69,7 @@ fun statistics(statistics: StatisticsService) = commands {
         }
     }
 
-    command("MessageRanking") {
+    command("MessageRanking", "MessageRankings") {
         requiresGuild = true
 
         description = "Graphs the ranking of members by messages."

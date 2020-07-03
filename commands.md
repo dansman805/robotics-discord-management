@@ -44,13 +44,13 @@
 | Warn                                                           | User, (Text)   | Warn an user                                                 |
 
 ## Statistics
-| Commands                 | Arguments                    | Description                                                                                   |
-| ------------------------ | ---------------------------- | --------------------------------------------------------------------------------------------- |
-| ChannelDistribution      | (User), (Boolean)            | Graphs the amount of messages in each channel for either a provided user or the guild.        |
-| CumulativeMessages       | (User), (Integer), (Boolean) | Graphs the cumulative amount of messages for either a provided user or the guild.             |
-| HourDistribution, Hourly | (User), (Boolean)            | Graphs the amount of messages hourly in each channel for either a provided user or the guild. |
-| MessageRanking           | (Integer), (Boolean)         | Graphs the ranking of members by messages.                                                    |
-| Messages                 | (User), (Integer), (Boolean) | Graphs the amount of messages for either a provided user or the guild.                        |
+| Commands                        | Arguments                    | Description                                                                                   |
+| ------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------- |
+| ChannelDistribution             | (User), (Boolean)            | Graphs the amount of messages in each channel for either a provided user or the guild.        |
+| CumulativeMessages              | (User), (Integer), (Boolean) | Graphs the cumulative amount of messages for either a provided user or the guild.             |
+| HourDistribution, Hourly        | (User), (Boolean)            | Graphs the amount of messages hourly in each channel for either a provided user or the guild. |
+| MessageRanking, MessageRankings | (Integer), (Boolean)         | Graphs the ranking of members by messages.                                                    |
+| Messages                        | (User), (Integer), (Boolean) | Graphs the amount of messages for either a provided user or the guild.                        |
 
 ## Utility
 | Commands                             | Arguments   | Description                                                                                |

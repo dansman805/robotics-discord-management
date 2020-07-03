@@ -27,5 +27,5 @@ val Any.properties: String
             }
         }
 
-        return sb.toString()
+        return sb.toString().split("\n").sorted().joinToString(separator = "\n")
     }

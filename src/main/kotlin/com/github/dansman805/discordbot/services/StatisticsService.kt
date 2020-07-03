@@ -97,7 +97,18 @@ class StatisticsService {
 
         val topNPeople = messageCounts.toList().sortedByDescending { it.second }.subList(0, topN)
 
-        val users = topNPeople.map { guild.jda.getUserById(it.first)?.name ?: it.first.toString() }
+        lateinit var users: List<String>
+
+        guild.retrieveMembers()
+                .thenApply { v -> guild.getMemberCache() }
+                .thenAccept { members ->
+                    users = topNPeople.map {
+
+                        member -> println(member)
+                        members.firstOrNull { it.idLong == member.first }?.user?.name
+                            ?: member.first.toString()
+                    }
+                }.get()
         val topNMessageCounts = topNPeople.map { it.second }
 
         val plot = CategoryChartBuilder().apply {
