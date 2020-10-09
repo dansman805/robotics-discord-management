@@ -5,42 +5,32 @@ import com.github.dansman805.discordbot.db
 import com.github.dansman805.discordbot.entities.MessageDatabaseEntry
 import com.github.dansman805.discordbot.entities.Messages
 import com.github.dansman805.discordbot.extensions.CODE_BLOCK_DELIMITER
-import com.github.dansman805.discordbot.extensions.discordContext
-import com.github.dansman805.discordbot.extensions.safe
-import me.jakejmattson.kutils.api.annotations.CommandSet
-import me.jakejmattson.kutils.api.annotations.Precondition
-import me.jakejmattson.kutils.api.arguments.EveryArg
-import me.jakejmattson.kutils.api.dsl.command.DiscordContext
-import me.jakejmattson.kutils.api.dsl.command.commands
-import me.jakejmattson.kutils.api.dsl.preconditions.Fail
-import me.jakejmattson.kutils.api.dsl.preconditions.Pass
-import me.jakejmattson.kutils.api.dsl.preconditions.precondition
-import me.jakejmattson.kutils.api.extensions.jda.toMember
-import me.jakejmattson.kutils.api.services.ScriptEngineService
+import com.gitlab.kordlib.common.entity.Snowflake
+import com.gitlab.kordlib.core.entity.channel.TextChannel
 import me.liuwj.ktorm.dsl.eq
 import me.liuwj.ktorm.entity.*
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.TextChannel
+import me.jakejmattson.discordkt.api.annotations
+import me.jakejmattson.discordkt.api.dsl.*
 
 const val developerCategoryName = "Developer"
 
-@Precondition
-fun isDeveloper() = precondition {
-    if (it.container[it.command!!.names.first()]?.category != developerCategoryName) {
-        return@precondition Pass
-    }
+class IsDeveloper : Precondition() {
+    override suspend fun evaluate(event: CommandEvent<*>): PreconditionResult {
+        if (event.command!!.category != developerCategoryName) {
+            return Pass
+        }
 
-    if (botConfig.developerIds.contains(it.author.idLong)) {
-        return@precondition Pass
-    } else {
-        return@precondition Fail("You must be a developer to run this command!")
+        if (botConfig.developerIds.contains(event.author.id.longValue)) {
+            return Pass
+        } else {
+            return Fail("You must be a developer to run this command!")
+        }
     }
 }
 
-@CommandSet(developerCategoryName)
-fun developerCommands(scriptEngineService: ScriptEngineService) = commands {
-    fun getLatestMessage(channel: TextChannel): Long  = try {
-        channel.latestMessageIdLong
+fun developerCommands(scriptEngineService: ScriptEngineService) = commands("developerCategoryName") {
+    fun getLatestMessage(channel: TextChannel): Snowflake = try {
+        channel.lastMessageId!!
     }
     catch (e: Exception) {
         getLatestMessage(channel)
@@ -48,10 +38,10 @@ fun developerCommands(scriptEngineService: ScriptEngineService) = commands {
 
     command("Refresh") {
         execute {
-            it.safe {
+
                 val messages = db.sequenceOf(Messages)
 
-                for (channel in it.guild!!.textChannels) {
+                for (channel in guild!!.textChannels) {
                     println("Started: ${channel.name}")
 
                     if (channel.jda

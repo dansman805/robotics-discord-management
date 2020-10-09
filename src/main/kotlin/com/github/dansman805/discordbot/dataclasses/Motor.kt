@@ -43,10 +43,8 @@ data class Motor(val rpm: Double, val stallTorque: Double, val stallCurrent: Dou
     }
 
     companion object {
-        // data taken from
-        // https://www.chiefdelphi.com/t/paper-ftc-bw-jvns-mechanical-design-calculator-revised-for-ftc/160196
         val stock393 = Motor(167.0, 2.78, 8.00, 0.62, 12.14)
         val highSpeed393 = Motor(267.0, 1.73, 8.00, 0.62, 12.10)
-        val neverRestBare = Motor(6600.0, 0.06178857854, 11.5, 0.4, 14.00)
+        val neverRestBare = Motor(5475.0, 0.173, 9.8, 0.355, 25.92)
     }
 }

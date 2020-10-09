@@ -1,15 +1,44 @@
 package com.github.dansman805.discordbot
 
-import me.jakejmattson.kutils.api.dsl.configuration.startBot
+import com.gitlab.kordlib.kordx.emoji.Emojis
+import me.jakejmattson.discordkt.api.dsl.bot
+import java.awt.Color
 
-fun main() {
+suspend fun main() {
     initDb()
 
-    startBot(botConfig.discordToken, true) {
+    bot(botConfig.discordToken) {
+        prefix {
+            "+"
+        }
+
         configure {
-            prefix {
-                "+"
-            }
+            //Allow a mention to be used in front of commands ('@Bot help`).
+            allowMentionPrefix = true
+
+            //Whether or not to generate documentation for registered commands.
+            generateCommandDocs = true
+
+            //Whether or not to show registered entity information on startup.
+            showStartupLog = true
+
+            //If this is true, commands cannot be invoked in a private message.
+            requiresGuild = true
+
+            //An emoji added when a command is received ('null' to disable).
+            commandReaction = Emojis.eyes
+
+            //A color constant for your bot - typically used in embeds.
+            theme = Color(0x00BFFF)
+        }
+
+        permissions {
+            true
+        }
+
+        //The Discord presence shown on your bot.
+        presence {
+            this.listening("dansman805's problems")
         }
     }
 }

@@ -9,12 +9,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin on the JVM
-    id("org.jetbrains.kotlin.jvm").version("1.3.71")
-    kotlin("plugin.serialization") version "1.3.70"
+    id("org.jetbrains.kotlin.jvm").version("1.4.10")
+    kotlin("plugin.serialization") version "1.4.10"
 
     // Apply the application to add support for building a CLI application
     application
-    // kotlin("jvm") version "1.3.71"
 }
 
 repositories {
