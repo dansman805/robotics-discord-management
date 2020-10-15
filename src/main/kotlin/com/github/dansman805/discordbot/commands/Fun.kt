@@ -104,6 +104,8 @@ fun funCommands() = commands {
     }
 
     command("Bolb") {
+        this.requiresGuild = false
+
         execute (FileArg,
                 ChoiceArg("Bolb Type", "Bolb", "Bolbolb", "Bolbways",
                         "Squishbolbolb", "Tallbolb").makeOptional { "Bolb" },

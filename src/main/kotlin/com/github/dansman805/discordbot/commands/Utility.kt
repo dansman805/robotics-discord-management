@@ -49,6 +49,7 @@ fun hasNickPerms() = precondition {
 @kotlinx.serialization.UnstableDefault
 fun utilityCommands(teamService: TeamService, wikipediaSummaryService: WikipediaSummaryService) = commands {
     command("Ping") {
+        requiresGuild = false
         description = "Responds with Pong! (As well as the server name, and the time it takes the bot to respond)"
         execute {
             it.safe {
@@ -91,6 +92,8 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
     }
 
     command("TheOrangeAlliance", "TOA") {
+        requiresGuild = false
+
         description = "Provides data on a given FTC team from The Orange Alliance"
 
         execute(TeamNumberArg) {
@@ -108,6 +111,8 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
     }
 
     command("TheBlueAlliance", "TBA") {
+        requiresGuild = false
+
         description = "Provides data on a given FRC team from The Blue Alliance"
 
         execute(TeamNumberArg) {
@@ -124,6 +129,8 @@ fun utilityCommands(teamService: TeamService, wikipediaSummaryService: Wikipedia
     }
 
     command("Wikipedia", "Wiki", "W") {
+        requiresGuild = false
+
         description = "Provides the Wikipedia summary on a given topic"
 
         execute(EveryArg) {
