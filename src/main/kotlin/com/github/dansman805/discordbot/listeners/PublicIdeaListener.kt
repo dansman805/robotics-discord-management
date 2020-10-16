@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 class PublicIdeaListener {
     @Subscribe
     fun onMessageReceived(event: MessageReceivedEvent) {
-        if (event.channel.idLong == botConfig.publicIdeaChannelId) {
+        if (botConfig.voteChannelIds?.contains(event.channel.idLong) == true) {
             event.message.thumbUpDown()
         }
     }

@@ -23,7 +23,7 @@ data class BotConfig(
         val joinedLogId: Long,
         val developerIds: List<Long>,
         val hiddenChannelIds: List<Long>? = null,
-        val publicIdeaChannelId: Long? = null,
+        val voteChannelIds: List<Long>? = null,
         val dateTimeFormatPattern: String = "u-M-d H:m:s.S"
 ) {
     val dateTimeFormatter: DateTimeFormatter get() = DateTimeFormatter.ofPattern(dateTimeFormatPattern)
