@@ -5,7 +5,7 @@ import com.github.dansman805.discordbot.extensions.thumbUpDown
 import com.google.common.eventbus.Subscribe
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-class PublicIdeaListener {
+class VoteChannelListener {
     @Subscribe
     fun onMessageReceived(event: MessageReceivedEvent) {
         if (botConfig.voteChannelIds?.contains(event.channel.idLong) == true) {
