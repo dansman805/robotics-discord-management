@@ -1,8 +1,5 @@
 package com.github.dansman805.discordbot.extensions
 
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.TextChannel
-
 fun TextChannel.allMessages(): List<Message> {
     // Get the first up to 100 messages in order to start off the list
     val messages =

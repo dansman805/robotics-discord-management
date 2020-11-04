@@ -1,8 +1,8 @@
 package com.github.dansman805.discordbot.entities
 
+import com.gitlab.kordlib.core.entity.Message
 import me.liuwj.ktorm.entity.Entity
 import me.liuwj.ktorm.schema.*
-import net.dv8tion.jda.api.entities.Message
 
 interface MessageDatabaseEntry : Entity<MessageDatabaseEntry> {
     var messageId: Long
@@ -13,12 +13,12 @@ interface MessageDatabaseEntry : Entity<MessageDatabaseEntry> {
     var contentRaw: String
 
     companion object {
-        fun fromMessage(m: Message) = Entity.create<MessageDatabaseEntry>().apply {
-            messageId = m.idLong
-            guildId = m.guild.idLong
-            channelId = m.channel.idLong
-            authorId = m.author.idLong
-            epochSecond = m.timeCreated.toEpochSecond()
+        suspend fun fromMessage(m: Message) = Entity.create<MessageDatabaseEntry>().apply {
+            messageId = m.id.longValue
+            guildId = m.getGuild().id.longValue
+            channelId = m.channel.id.longValue
+            authorId = m.author!!.id.longValue
+            epochSecond = m.timestamp.epochSecond
             contentRaw = ""
         }
     }
