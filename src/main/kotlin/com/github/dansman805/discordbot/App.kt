@@ -1,7 +1,9 @@
 package com.github.dansman805.discordbot
 
+import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.emoji.Emojis
 import me.jakejmattson.discordkt.api.dsl.bot
+import me.jakejmattson.discordkt.api.dsl.listeners
 import java.awt.Color
 
 suspend fun main() {
@@ -22,9 +24,6 @@ suspend fun main() {
             //Whether or not to show registered entity information on startup.
             showStartupLog = true
 
-            //If this is true, commands cannot be invoked in a private message.
-            requiresGuild = true
-
             //An emoji added when a command is received ('null' to disable).
             commandReaction = Emojis.eyes
 
@@ -39,6 +38,14 @@ suspend fun main() {
         //The Discord presence shown on your bot.
         presence {
             this.listening("dansman805's problems")
+        }
+
+        listeners {
+            on<MessageCreateEvent> {
+                if (this.message.channelId == botConfig.publicIdeaChannelId) {
+                    this.message.thumbUpDown()
+                }
+            }
         }
     }
 }

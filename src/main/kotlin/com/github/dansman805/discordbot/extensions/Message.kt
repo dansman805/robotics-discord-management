@@ -1,10 +1,13 @@
 package com.github.dansman805.discordbot.extensions
 
-import net.dv8tion.jda.api.entities.Message
+import com.gitlab.kordlib.core.entity.Message
+import com.gitlab.kordlib.kordx.emoji.Emojis
+import com.gitlab.kordlib.kordx.emoji.addReaction
+import com.gitlab.kordlib.kordx.emoji.deleteOwnReaction
 
-fun Message.thumbUpDown() {
-    this.removeReaction("\uD83D\uDC40").submit() // eyes
+suspend fun Message.thumbUpDown() {
+    this.deleteOwnReaction(Emojis.eyes)
 
-    this.addReaction("U+1F44D").submit() // thumbs up
-    this.addReaction("U+1F44E").submit() // thumbs down
+    this.addReaction(Emojis.thumbsup) // thumbs up
+    this.addReaction(Emojis.thumbsdown) // thumbs down
 }
