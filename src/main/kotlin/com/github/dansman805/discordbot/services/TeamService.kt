@@ -7,7 +7,7 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.responseObject
 import kotlinx.serialization.json.Json
-import me.jakejmattson.kutils.api.annotations.Service
+import me.jakejmattson.discordkt.api.annotations.Service
 
 @kotlinx.serialization.ImplicitReflectionSerializer
 @kotlinx.serialization.UnstableDefault
@@ -21,7 +21,7 @@ class TeamService {
                 .header("X-Application-Origin", botConfig.appName)
                 .responseString().third
 
-        val json = Json.nonstrict
+        val json = Json { ignoreUnknownKeys = false }
 
         return json.parse(
                 FTCTeam.serializer(),
@@ -34,7 +34,7 @@ class TeamService {
                 .header("Content-Type", "application/json")
                 .header("X-TBA-Auth-Key", botConfig.blueAllianceKey)
                 .header("User-Agent", botConfig.appName)
-                .responseObject<FRCTeam>(json = Json.nonstrict).third
+                .responseObject<FRCTeam>(json = Json { ignoreUnknownKeys = false }).third
 
         return result.get()
     }

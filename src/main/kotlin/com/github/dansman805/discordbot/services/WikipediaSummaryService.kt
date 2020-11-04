@@ -3,8 +3,7 @@ package com.github.dansman805.discordbot.services
 import com.github.dansman805.discordbot.dataclasses.WikipediaSummary
 import com.github.kittinunf.fuel.Fuel
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import me.jakejmattson.kutils.api.annotations.Service
+import me.jakejmattson.discordkt.api.annotations.Service
 
 @kotlinx.serialization.ImplicitReflectionSerializer
 @kotlinx.serialization.UnstableDefault
@@ -18,8 +17,6 @@ class WikipediaSummaryService {
             return null
         }
 
-        val json = Json(JsonConfiguration(ignoreUnknownKeys = true))
-
-        return json.parse(WikipediaSummary.serializer(), result.third.get())
+        return Json { ignoreUnknownKeys = false }.parse(WikipediaSummary.serializer(), result.third.get())
     }
 }
