@@ -9,7 +9,6 @@ import com.gitlab.kordlib.common.entity.Snowflake
 import com.gitlab.kordlib.core.entity.channel.TextChannel
 import me.liuwj.ktorm.dsl.eq
 import me.liuwj.ktorm.entity.*
-import me.jakejmattson.discordkt.api.annotations
 import me.jakejmattson.discordkt.api.dsl.*
 
 const val developerCategoryName = "Developer"
@@ -41,7 +40,7 @@ fun developerCommands(scriptEngineService: ScriptEngineService) = commands("deve
 
                 val messages = db.sequenceOf(Messages)
 
-                for (channel in guild!!.textChannels) {
+                for (channel in guild!!.channels.collect()) {
                     println("Started: ${channel.name}")
 
                     if (channel.jda

@@ -4,12 +4,15 @@ import com.github.dansman805.discordbot.botConfig
 import com.github.dansman805.discordbot.db
 import com.github.dansman805.discordbot.entities.Messages
 import com.github.dansman805.discordbot.toDate
-import me.jakejmattson.kutils.api.annotations.Service
+import com.gitlab.kordlib.common.entity.Snowflake
+import com.gitlab.kordlib.core.behavior.channel.createMessage
+import com.gitlab.kordlib.core.behavior.getChannelOf
+import com.gitlab.kordlib.core.entity.Guild
+import com.gitlab.kordlib.core.entity.User
+import com.gitlab.kordlib.core.entity.channel.TextChannel
+import me.jakejmattson.discordkt.api.annotations.Service
 import me.liuwj.ktorm.dsl.*
 import me.liuwj.ktorm.entity.*
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.entities.User
 import java.io.File
 import java.time.LocalDateTime
 import java.util.*
@@ -20,6 +23,7 @@ import org.knowm.xchart.internal.chartpart.Chart
 import org.knowm.xchart.internal.series.Series
 import org.knowm.xchart.style.Styler
 import java.awt.Color
+import java.nio.file.FileSystems
 
 @Service
 class StatisticsService {
@@ -27,7 +31,7 @@ class StatisticsService {
         db.sequenceOf(Messages)
     }
     else {
-        db.sequenceOf(Messages).filter { it.channelId notInList botConfig.hiddenChannelIds!! }
+        db.sequenceOf(Messages).filter { it.channelId notInList botConfig.hiddenChannelIds }
     }
 
     private fun secondsInTimeSpan(days: Int) = 24 * 60 * 60 * days
@@ -39,15 +43,15 @@ class StatisticsService {
 
         val sequence = if (user == null) {
             sequence
-                    .filter { it.guildId eq guild.idLong }
+                    .filter { it.guildId eq guild.id.longValue }
                     .sortedBy { it.epochSecond }
                     .asKotlinSequence()
         }
         else {
             sequence
                     .sortedBy { it.epochSecond }
-                    .filter { it.guildId eq guild.idLong }
-                    .filter { it.authorId eq user.idLong }
+                    .filter { it.guildId eq guild.id.longValue }
+                    .filter { it.authorId eq user.id.longValue }
                     .asKotlinSequence()
         }
 
@@ -60,7 +64,7 @@ class StatisticsService {
         return instanceOfDays.toSortedMap()
     }
 
-    fun cumulativeMessages(user: User?, guild: Guild, textChannel: TextChannel, days: Int, svg: Boolean) {
+    suspend fun cumulativeMessages(user: User?, guild: Guild, textChannel: TextChannel, days: Int, svg: Boolean) {
         val messagesPerDay = messagesPerDay(user, guild, days).map { Pair<Long, Int>(it.key, it.value) }
 
         val cumulativeMessagesPerDay = messagesPerDay.toMutableList()
@@ -86,8 +90,8 @@ class StatisticsService {
         plot.styleAndSend(textChannel, svg)
     }
 
-    fun messageRanking(guild: Guild, textChannel: TextChannel, topN: Int, svg: Boolean) {
-        val messages = sequence.filter { it.guildId eq guild.idLong }
+    suspend fun messageRanking(guild: Guild, textChannel: TextChannel, topN: Int, svg: Boolean) {
+        val messages = sequence.filter { it.guildId eq guild.id.longValue }
                 .asKotlinSequence()
         val messageCounts = HashMap<Long, Int>()
 
@@ -99,16 +103,10 @@ class StatisticsService {
 
         lateinit var users: List<String>
 
-        guild.retrieveMembers()
-                .thenApply { v -> guild.getMemberCache() }
-                .thenAccept { members ->
-                    users = topNPeople.map {
+        users = topNPeople.map {
+                guild.getMember(Snowflake(it.first)).username
+        }
 
-                        member -> println(member)
-                        members.firstOrNull { it.idLong == member.first }?.user?.name
-                            ?: member.first.toString()
-                    }
-                }.get()
         val topNMessageCounts = topNPeople.map { it.second }
 
         val plot = CategoryChartBuilder().apply {
@@ -122,7 +120,7 @@ class StatisticsService {
         plot.styleAndSend(textChannel, svg)
     }
 
-    fun messages(user: User?, guild: Guild, textChannel: TextChannel, days: Int, svg: Boolean) {
+    suspend fun messages(user: User?, guild: Guild, textChannel: TextChannel, days: Int, svg: Boolean) {
         val messagesPerDay = messagesPerDay(user, guild, days).toList()
 
         val dates = messagesPerDay.map { it.first.toDate() }
@@ -141,18 +139,18 @@ class StatisticsService {
         plot.styleAndSend(textChannel, svg)
     }
 
-    fun hourlyMessages(user: User?, guild: Guild, textChannel: TextChannel, svg: Boolean) {
+    suspend fun hourlyMessages(user: User?, guild: Guild, textChannel: TextChannel, svg: Boolean) {
         val sequence = if (user == null) {
             sequence
                     .sortedBy { it.epochSecond }
-                    .filter { it.guildId eq guild.idLong }
+                    .filter { it.guildId eq guild.id.longValue }
                     .asKotlinSequence()
         }
         else {
             sequence
                     .sortedBy { it.epochSecond }
-                    .filter { it.guildId eq guild.idLong }
-                    .filter { it.authorId eq user.idLong }
+                    .filter { it.guildId eq guild.id.longValue }
+                    .filter { it.authorId eq user.id.longValue }
                     .asKotlinSequence()
         }
 
@@ -177,13 +175,13 @@ class StatisticsService {
         plot.styleAndSend(textChannel, svg, false)
     }
 
-    fun channelDistribution(user: User?, guild: Guild, textChannel: TextChannel, svg: Boolean) {
+    suspend fun channelDistribution(user: User?, guild: Guild, textChannel: TextChannel, svg: Boolean) {
         val messages = if (user == null) {
-            sequence.filter { it.guildId eq guild.idLong }
+            sequence.filter { it.guildId eq guild.id.longValue }
 
         }
         else {
-            sequence.filter { it.guildId eq guild.idLong }.filter { it.authorId eq user.idLong }
+            sequence.filter { it.guildId eq guild.id.longValue }.filter { it.authorId eq user.id.longValue }
         }
 
         val channelCounts = HashMap<Long, Int>()
@@ -195,7 +193,8 @@ class StatisticsService {
         val sortedChannelCounts = channelCounts.toList()
                 .sortedByDescending { it.second }
 
-        val channelNames = sortedChannelCounts.map { guild.getTextChannelById(it.first)?.name ?: it.first.toString() }
+        val channelNames = sortedChannelCounts.map {
+            guild.getChannelOf<TextChannel>(Snowflake(it.first)).name }
         val channelMessageCounts = sortedChannelCounts.map { it.second }
 
         val plot = CategoryChartBuilder().apply {
@@ -209,7 +208,7 @@ class StatisticsService {
         plot.styleAndSend(textChannel, svg)
     }
 
-    private fun CategoryChart.styleAndSend(textChannel: TextChannel, svg: Boolean, showLegend: Boolean=true) {
+    private suspend fun CategoryChart.styleAndSend(textChannel: TextChannel, svg: Boolean, showLegend: Boolean=true) {
         this.styler.apply {
             xAxisLabelRotation = -90
             xAxisLabelAlignmentVertical = Styler.TextAlignment.Right
@@ -220,7 +219,7 @@ class StatisticsService {
         styleAndSend(this, textChannel, svg)
     }
 
-    private fun XYChart.styleAndSend(textChannel: TextChannel, svg: Boolean) {
+    private suspend fun XYChart.styleAndSend(textChannel: TextChannel, svg: Boolean) {
         this.styler.apply {
             markerSize = 5
             legendPosition = Styler.LegendPosition.InsideNW
@@ -229,7 +228,7 @@ class StatisticsService {
         styleAndSend(this, textChannel, svg)
     }
 
-    private fun <T: Styler, U: Series> styleAndSend(chart: Chart<T, U>, textChannel: TextChannel, svg: Boolean) {
+    private suspend fun <T: Styler, U: Series> styleAndSend(chart: Chart<T, U>, textChannel: TextChannel, svg: Boolean) {
         val location = botConfig.dateTimeFormatter.format(LocalDateTime.now()) + if (svg) {".svg"} else { ".png" }
 
         chart.styler.apply {
@@ -249,15 +248,15 @@ class StatisticsService {
 
         val file = File(location)
 
-        textChannel.sendFile(file).complete()
-
-        Thread.sleep(1000)
-
-        file.delete()
+        textChannel.createMessage {
+            addFile(FileSystems.getDefault().getPath(" location"))
+        }.also {
+            file.delete()
+        }
     }
 
     private fun title(title: String, guild: Guild, user: User?=null): String {
-        val of = user?.name ?: guild.name
+        val of = user?.username ?: guild.name
 
         return "$title of $of"
     }

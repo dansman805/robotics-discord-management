@@ -35,7 +35,7 @@ dependencies {
 
     // Use the Kotlin JUnit integration
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    implementation("me.jakejmattson:DiscordKt:0.20.0")
+    implementation("me.jakejmattson:DiscordKt:0.21.3")
 
     val fuelVersion = "2.2.0"
 
