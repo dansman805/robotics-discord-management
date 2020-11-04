@@ -1,8 +1,9 @@
 package com.github.dansman805.discordbot.dataclasses
 
+import com.gitlab.kordlib.core.behavior.channel.createEmbed
+import com.gitlab.kordlib.core.entity.channel.MessageChannel
 import kotlinx.serialization.Serializable
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.MessageEmbed
+import java.awt.Color
 
 @Serializable
 data class FRCTeam(
@@ -24,22 +25,41 @@ data class FRCTeam(
         val rookie_year: Int?,
         val motto: String?,
         val home_championship: Map<String?, String?>?) {
-    fun location() = "$city, $state_prov $postal_code, $country"
+    val location
+            get() = "$city, $state_prov $postal_code, $country"
 
-    fun genEmbed(): MessageEmbed {
-        val e = EmbedBuilder()
+    suspend fun sendEmbed(channel: MessageChannel)  {
+        channel.createEmbed {
+            title = "FIRST®️ Robotics Competition Team $team_number"
+            url = "https://www.thebluealliance.com/team/$team_number"
+            color = Color(54, 70, 156)
+            thumbnail {
+                url = "https://frcavatars.herokuapp.com/get_image?team=$team_number"
+            }
 
-        e.setTitle("FIRST®️ Robotics Competition Team $team_number",
-                "https://www.thebluealliance.com/team/$team_number")
-        e.setColor(0x36469C)
-        e.setThumbnail("https://frcavatars.herokuapp.com/get_image?team=$team_number")
+            field {
+                name = "Name"
+                value = nickname!!
+                inline = true
+            }
 
-        e.addField("Name", nickname, true)
-        e.addField("Rookie Year", if (rookie_year != null) yearToSeason(rookie_year) else "?", true)
-        e.addField("Location", location(), true)
-        e.addField("Website", website ?: "n/a", false)
+            field {
+                name = "Rookie Year"
+                value = if (rookie_year != null) yearToSeason(rookie_year) else "?"
+                inline = true
+            }
 
-        return e.build()
+            field {
+                name = "Location"
+                value = location
+                inline = true
+            }
+
+            field {
+                name = "Website"
+                value = website ?: "n/a"
+            }
+        }
     }
 
     companion object {

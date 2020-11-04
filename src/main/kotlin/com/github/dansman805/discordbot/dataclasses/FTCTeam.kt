@@ -1,8 +1,9 @@
 package com.github.dansman805.discordbot.dataclasses
 
+import com.gitlab.kordlib.core.behavior.channel.createEmbed
+import com.gitlab.kordlib.core.entity.channel.MessageChannel
 import kotlinx.serialization.Serializable
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.MessageEmbed
+import java.awt.Color
 
 @Serializable
 data class FTCTeam(val team_key: String?,
@@ -19,28 +20,55 @@ data class FTCTeam(val team_key: String?,
                    val country: String?,
                    val rookie_year: Int?,
                    val website: String?) {
-    fun location() = "$city, $state_prov $zip_code, $country"
+    val location
+        get() = "$city, $state_prov $zip_code, $country"
 
-    fun lastActive(): String = when (last_active) {
-        null -> "?"
-        else -> yearToSeason("20${last_active.toString().substring(2..3)}".toInt())
-    }
+    val lastActive: String
+        get() = when (last_active) {
+            null -> "?"
+            else -> yearToSeason("20${last_active.toString().substring(2..3)}".toInt())
+        }
 
-    fun genEmbed(): MessageEmbed {
-        val e = EmbedBuilder()
+    suspend fun sendEmbed(channel: MessageChannel) {
+        channel.createEmbed {
+            title = "FIRST®️ Tech Challenge Team $team_number"
+            url = "https://theorangealliance.org/teams/$team_number"
+            color = Color(248, 152, 8)
+            thumbnail {
+                url = "https://raw.githubusercontent.com/orange-alliance/the-orange-alliance/master/src/assets/imgs/icon512.png"
+            }
 
-        e.setTitle("FIRST®️ Tech Challenge Team $team_number",
-                "https://theorangealliance.org/teams/$team_number")
-        e.setColor(0xf89808)
-        e.setThumbnail("https://raw.githubusercontent.com/orange-alliance/the-orange-alliance/master/src/assets/imgs/icon512.png")
+            field {
+                name = "Name"
+                value = team_name_short!!
+                inline = true
+            }
 
-        e.addField("Name", team_name_short, true)
-        e.addField("Rookie Season", if (rookie_year != null) yearToSeason(rookie_year + 1) else "?", true)
-        e.addField("Last Active", lastActive(), true)
-        e.addField("Location", location(), true)
-        e.addField("Website", website ?: "n/a", false)
+            field {
+                name = "Rookie Season"
+                value = if (rookie_year != null) yearToSeason(rookie_year + 1) else "?"
+                inline = true
+            }
 
-        return e.build()
+            field {
+                name = "Last Active"
+                value = lastActive
+                inline = true
+            }
+
+            field {
+                name = "Location"
+                value = location
+                inline = true
+            }
+
+            if (website != null) {
+                field {
+                    name = "Website"
+                    value = website
+                }
+            }
+        }
     }
 
     companion object {

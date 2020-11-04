@@ -2,38 +2,43 @@ package com.github.dansman805.discordbot.dataclasses
 
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.serialization.responseObject
+import com.gitlab.kordlib.core.behavior.channel.createEmbed
+import com.gitlab.kordlib.core.entity.channel.MessageChannel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.MessageEmbed
 
 @kotlinx.serialization.ImplicitReflectionSerializer
 @kotlinx.serialization.UnstableDefault
 @Serializable
 data class WikipediaSummary(
         val type: String, val title: String, val extract: String, val pageid: Int, val thumbnail: Image? = null) {
-    fun toEmbed(): MessageEmbed {
-        val e = EmbedBuilder()
-        e.setTitle("Wikipedia: $title", "http://en.wikipedia.org/?curid=$pageid")
+    suspend fun sendEmbed(channel: MessageChannel) {
+        channel.createEmbed {
+            title = "$title"
+            url = "http://en.wikipedia.org/?curid=$pageid"
 
-        e.setImage(thumbnail?.source)
+            if (this@WikipediaSummary.thumbnail != null) {
+                thumbnail {
+                    url = this@WikipediaSummary.thumbnail?.source
+                }
+            }
 
-        if (type == "disambiguation") {
-            /*for (link in getLinksOfDisambiguation(title)) {
-                e.addField(link, "", true)
-            }*/
+            if (type == "disambiguation") {
+                field {
+                    name = "Disambiguation"
+                    value = "There is a page for this topic." +
+                            "However, it is a disambiguation; please try being more specific."
+                }
+            }
+            else {
+                val shortenedExtract = if (extract.length > 1023) extract.substring(0..1023) else extract
 
-            e.addField("Disambiguation", "" +
-                    "There is a page for this topic. However, it is a disambiguation; please try being more specific.",
-                    false)
+                field {
+                    name = "Summary"
+                    value = shortenedExtract
+                }
+            }
         }
-        else {
-            val shortenedExtract = if (extract.length > 1023) extract.substring(0..1023) else extract
-
-            e.addField("Summary", shortenedExtract, false)
-        }
-
-        return e.build()
     }
 }
 
@@ -45,7 +50,7 @@ data class Image(val source: String)
 fun getLinksOfDisambiguation(title: String): List<String> {
     val disambiguation =
             Fuel.get("https://en.wikipedia.org/w/api.php?action=parse&page=$title&format=json")
-                    .responseObject<Disambiguation>(json = Json.nonstrict).third
+                    .responseObject<Disambiguation>(json = Json { ignoreUnknownKeys = true }).third
 
     return disambiguation.get().parse.links.links.filterNotNull().map { it.`*` }
 }
@@ -57,7 +62,8 @@ data class Disambiguation(val parse: Parse)
 data class Parse(val links: Links)
 
 @Serializable
-data class Links(val `0`: Link?=null,
+data class Links(
+        val `0`: Link?=null,
                  val `1`: Link?=null,
                  val `2`: Link?=null,
                  val `3`: Link?=null,
