@@ -9,8 +9,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin on the JVM
-    id("org.jetbrains.kotlin.jvm").version("1.3.72")
-    kotlin("plugin.serialization") version "1.3.72"
+    id("org.jetbrains.kotlin.jvm").version("1.4.0")
+    kotlin("plugin.serialization") version "1.4.0"
 
     // Apply the application to add support for building a CLI application
     application
@@ -27,24 +27,25 @@ repositories {
 }
 
 dependencies {
-    // Use the Kotlin JDK 8 standard library
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.10")
+
 
     // Use the Kotlin test library
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 
     // Use the Kotlin JUnit integration
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+
     implementation("me.jakejmattson:DiscordKt:0.21.3")
 
-    val fuelVersion = "2.2.0"
+    val fuelVersion = "2.3.0"
 
     implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
     implementation("com.github.kittinunf.fuel:fuel-kotlinx-serialization:$fuelVersion")
 
     implementation("org.xerial:sqlite-jdbc:3.30.1")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
     implementation("org.jsoup:jsoup:1.10.3")
     implementation("de.swirtz:ktsRunner:0.0.8")
 
@@ -61,9 +62,5 @@ application {
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
 }

@@ -3,7 +3,6 @@ package com.github.dansman805.discordbot
 import com.github.dansman805.discordbot.dataclasses.MembershipTimeRole
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import me.liuwj.ktorm.database.Database
 import me.liuwj.ktorm.logging.ConsoleLogger
 import me.liuwj.ktorm.logging.LogLevel
@@ -23,7 +22,7 @@ data class BotConfig(
         val joinedLogId: Long,
         val developerIds: List<Long>,
         val hiddenChannelIds: List<Long>? = null,
-        val publicIdeaChannelId: Long? = null,
+        val voteChannelIds: List<Long>? = null,
         val dateTimeFormatPattern: String = "u-M-d H:m:s.S"
 ) {
     val dateTimeFormatter: DateTimeFormatter get() = DateTimeFormatter.ofPattern(dateTimeFormatPattern)
@@ -35,7 +34,7 @@ private val configFile = File("config.json")
 val botConfig by lazy {
     try {
         val serializer = BotConfig.serializer()
-        json.parse(serializer, configFile.readText())
+        Json.parse(serializer, configFile.readText())
     }
     catch (e: FileNotFoundException) {
         throw FileNotFoundException("Cannot find config.json! It should be located at ${File(".").canonicalPath}")

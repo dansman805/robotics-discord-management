@@ -17,6 +17,6 @@ class WikipediaSummaryService {
             return null
         }
 
-        return Json { ignoreUnknownKeys = false }.parse(WikipediaSummary.serializer(), result.third.get())
+        return Json { ignoreUnknownKeys = true }.parse(WikipediaSummary.serializer(), result.third.get())
     }
 }

@@ -43,7 +43,7 @@ suspend fun main() {
 
         listeners {
             on<MessageCreateEvent> {
-                if (this.message.channelId == botConfig.publicIdeaChannelId) {
+                if (botConfig.voteChannelIds?.contains(this.message.channelId.longValue) == true) {
                     this.message.thumbUpDown()
                 }
             }

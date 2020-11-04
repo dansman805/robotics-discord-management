@@ -31,7 +31,7 @@ class StatisticsService {
         db.sequenceOf(Messages)
     }
     else {
-        db.sequenceOf(Messages).filter { it.channelId notInList botConfig.hiddenChannelIds }
+        db.sequenceOf(Messages).filter { it.channelId notInList botConfig.hiddenChannelIds!! }
     }
 
     private fun secondsInTimeSpan(days: Int) = 24 * 60 * 60 * days
