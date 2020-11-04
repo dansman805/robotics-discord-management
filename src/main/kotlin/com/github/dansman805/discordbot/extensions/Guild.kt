@@ -1,67 +1,77 @@
 package com.github.dansman805.discordbot.extensions
 
 import com.github.dansman805.discordbot.botConfig
-import me.jakejmattson.kutils.api.dsl.embed.embed
-import me.jakejmattson.kutils.api.extensions.jda.fullName
-import net.dv8tion.jda.api.entities.Guild
+import com.gitlab.kordlib.core.behavior.channel.createEmbed
+import com.gitlab.kordlib.core.entity.Guild
+import com.gitlab.kordlib.core.entity.channel.TextChannel
+import com.gitlab.kordlib.rest.Image
+import kotlinx.coroutines.flow.count
 import java.awt.Color
+import java.time.ZoneOffset
 
-fun Guild.toEmbed() = embed {
-    val g = this@toEmbed
+suspend fun Guild.embedOfGuild(textChannel: TextChannel)  {
+    textChannel.createEmbed {
+        val g = this@embedOfGuild
 
-    color = Color(64, 0, 255)
+        title = g.name
+        color = Color(64, 0, 255)
 
-    if (g.iconUrl != null) {
-        thumbnail = g.iconUrl
-    }
+        val iconUrl = g.getIconUrl(Image.Format.PNG)
 
-    field {
-        name = "Name"
-        value = g.name
-    }
+        if (iconUrl != null) {
+            thumbnail {
+                url = iconUrl
+            }
+        }
 
-    field {
-        name = "ID"
-        value = g.id
-    }
+        field {
+            name = "Name"
+            value = g.name
+        }
 
-    field {
-        name = "Created At"
-        value = g.timeCreated.format(botConfig.dateTimeFormatter)
-    }
+        field {
+            name = "ID"
+            value = g.id.value
+        }
 
-    field {
-        name = "Owner"
-        value = g.owner?.fullName()
-    }
+        field {
+            name = "Created At (UTC)"
+            value = g.id.formattedTimeStamp
+        }
 
-    field {
-        name = "Member Count"
-        value = g.members.size.toString()
-    }
+        field {
+            name = "Owner"
+            value = g.owner.nicknameMention
+        }
 
-    field {
-        name = "Channel Count"
-        value = g.channels.size.toString()
-    }
+        field {
+            name = "Member Count"
+            value = g.members.count().toString()
+        }
 
-    field {
-        name = "Role Count"
-        value = (g.channels.size - 1).toString()
-    }
+        field {
+            name = "Channel Count"
+            value = g.channels.count().toString()
+        }
 
-    field {
-        value = g.emotes.size.toString()
-        name = "Emoji Count"
-    }
+        field {
+            name = "Role Count"
+            value = (g.channels.count() - 1).toString()
+        }
 
-    field {
-        name = "Region"
-        value = g.region.name
-    }
+        field {
+            value = g.emojis.count().toString()
+            name = "Emoji Count"
+        }
 
-    field {
-        name = "Icon URL"
-        value = g.iconUrl ?: "n/a"
+        field {
+            name = "Region"
+            value = g.getRegion().name
+        }
+
+        field {
+            name = "Icon URL"
+            value = iconUrl ?: "n/a"
+        }
     }
 }

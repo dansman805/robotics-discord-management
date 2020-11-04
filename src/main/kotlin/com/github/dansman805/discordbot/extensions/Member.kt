@@ -1,123 +1,113 @@
 package com.github.dansman805.discordbot.extensions
 
-import com.github.dansman805.discordbot.botConfig
 import com.github.dansman805.discordbot.db
 import com.github.dansman805.discordbot.entities.Messages
-import me.liuwj.ktorm.dsl.eq
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Message
-import java.time.OffsetDateTime
 import com.github.dansman805.discordbot.toDateTime
-import me.jakejmattson.kutils.api.dsl.embed.embed
-import me.jakejmattson.kutils.api.extensions.jda.toMember
+import com.gitlab.kordlib.common.entity.Permission
+import com.gitlab.kordlib.core.behavior.channel.createEmbed
+import java.time.OffsetDateTime
+import com.gitlab.kordlib.core.entity.Member
+import com.gitlab.kordlib.core.entity.Message
+import com.gitlab.kordlib.core.entity.channel.MessageChannel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
+import me.liuwj.ktorm.dsl.eq
 import me.liuwj.ktorm.entity.*
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.MessageChannel
 
-fun Member.toEmbed() = embed {
-    val m = this@toEmbed
-    val iconUrl = m.user.avatarUrl ?: "n/a"
+suspend fun Member.sendEmbed(channel: MessageChannel) {
+    channel.createEmbed {
+        val m = this@sendEmbed
 
-    color = m.color
-    if (iconUrl != "n/a") {
-        thumbnail = iconUrl
-    }
+        color = m.roles.first().color
 
-    field {
-        name = "Name"
-        value = m.effectiveName
-    }
+        thumbnail {
+            url = m.asUser().avatar.url
+        }
 
-    field {
-        name = "ID"
-        value = m.id
-    }
+        field {
+            name = "Name"
+            value = m.displayName
+        }
 
-    field {
-        name = "Nickname"
-        value = m.nickname ?: "n/a"
-        inline = m.nickname == null
-    }
+        field {
+            name = "ID"
+            value = m.id.value
+        }
 
-    field {
-        name = if (m.user.isBot) "Bot Created" else "User Joined Discord"
-        value = m.timeCreated.format(botConfig.dateTimeFormatter)
-    }
+        field {
+            name = "Nickname"
+            value = m.nickname ?: "n/a"
+            inline = m.nickname == null
+        }
 
-    field {
-        name = "Joined Guild"
-        value = m.timeJoined.format(botConfig.dateTimeFormatter)
-    }
+        field {
+            name = (if (m.isBot == true) "Bot Created" else "User Joined Discord") + "(UTC)"
+            value = m.asUser().id.formattedTimeStamp
+        }
 
-    field {
-        name = "Color"
-        value = if (m.color == null) "n/a" else m.color?.toHexString()
-    }
+        field {
+            name = "Joined Guild"
+            value = m.id.formattedTimeStamp
+        }
 
-    var roleNames = ""
+        field {
+            name = "Color"
+            value = m.roles.first().color.toHexString()
+        }
 
-    m.roles.forEach {
-        roleNames += "${it.name}, "
-    }
 
-    field {
-        name = "Roles"
-        value = if (roleNames.length >= 2) roleNames.substring(0, roleNames.length - 2) else "None"
-    }
+        field {
+            name = "Roles"
+            value = m.roles.toList().joinToString(", ")
+        }
 
-    field {
-        name = "Icon URL"
-        value = iconUrl
+        field {
+            name = "Icon URL"
+            value = m.asUser().avatar.url
+        }
     }
 }
-
-var x = 0
 
 private val messageSequence by lazy { db.sequenceOf(Messages) }
 
-fun Member.firstJoin(joinLogs: List<Message>): OffsetDateTime{
-    println(x)
-    x++
-
+fun Member.firstJoin(joinLogs: List<Message>): OffsetDateTime {
     return minOf(
             minOf(
-                    this.timeJoined,
+                    this.id.timeStampUTC,
                     joinLogs
-                            .sortedBy { it.timeCreated }
-                            .firstOrNull { it.isMentioned(this, Message.MentionType.USER) }
-                            ?.timeCreated ?: this.timeJoined
+                            .sortedBy { it.timestamp }
+                            .firstOrNull { this.id in it.mentionedUserIds }
+                            ?.id?.timeStampUTC ?: this.id.timeStampUTC
             ),
             messageSequence
-                    .filter { it.guildId eq this.guild.idLong }
-                    .filter { it.authorId eq this.idLong }
+                    .filter { it.guildId eq this.guild.id.longValue }
+                    .filter { it.authorId eq this.id.longValue }
                     .minBy { it.epochSecond }
-                    ?.toDateTime() ?: this.timeJoined
+                    ?.toDateTime() ?: this.id.timeStampUTC
     )
 }
 
-fun Member.ifHasPermission(messageChannel: MessageChannel,
+suspend fun Member.ifHasPermission(messageChannel: MessageChannel,
                            vararg permissions: Permission,
                            thingToRunIfPermissionPresent: () -> Unit) {
     var shouldRun = true
 
-    if (!this.hasPermission(permissions.toList())) {
-        val permissionsLacked = permissions.filter { !this.hasPermission(it) }
+    val memberPermissionsLacked = permissions.filterNot { it in this.getPermissions() }
 
-        messageChannel.sendMessage("${this.effectiveName}, " +
-                "you do not have ${permissionsLacked.joinToString(separator = " or ") { it.toString() }} permissions.")
-                .complete()
+    if (memberPermissionsLacked.isNotEmpty()) {
+        messageChannel.createMessage("${this.displayName}, " +
+                "you do not have ${memberPermissionsLacked.joinToString(separator = " or ") { it.toString() }} permissions.")
 
         shouldRun = false
     }
 
-    val selfMember = this.jda.selfUser.toMember(this.guild)
+    val selfMember = this.kord.getSelf().asMemberOrNull(guildId)
+    val selfPermissionsLacked = permissions.filterNot { it in this.getPermissions() }
 
-    if (selfMember?.hasPermission(permissions.toList()) == false) {
-        val permissionsLacked = permissions.filter { !selfMember.hasPermission(it) }
 
-        messageChannel.sendMessage(selfMember.effectiveName +
-                " does not have ${permissionsLacked.joinToString(separator = " or ") { it.toString() }} permissions.")
-                .complete()
+    if (selfPermissionsLacked.isNotEmpty()) {
+        messageChannel.createMessage(selfMember?.displayName +
+                " does not have ${selfPermissionsLacked.joinToString(separator = " or ") { it.toString() }} permissions.")
 
         shouldRun = false
     }
