@@ -29,7 +29,7 @@ data class BotConfig(
     val dateTimeFormatter: DateTimeFormatter get() = DateTimeFormatter.ofPattern(dateTimeFormatPattern)
 }
 
-private val json = Json(JsonConfiguration.Stable)
+private val json = Json
 private val configFile = File("config.json")
 
 val botConfig by lazy {

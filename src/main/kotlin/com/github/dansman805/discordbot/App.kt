@@ -1,5 +1,6 @@
 package com.github.dansman805.discordbot
 
+import com.github.dansman805.discordbot.extensions.thumbUpDown
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.emoji.Emojis
 import me.jakejmattson.discordkt.api.dsl.bot
