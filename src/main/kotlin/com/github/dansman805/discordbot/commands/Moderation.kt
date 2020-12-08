@@ -58,7 +58,9 @@ fun modLog(actor: Member, action: String, target: User, reason: String, embedCol
         }
     }
 
-    target.sendPrivateMessage(modLogEmbed)
+    if (actor.guild.isMember(target)) {
+        target.sendPrivateMessage(modLogEmbed)
+    }
 
     actor.guild.getTextChannelById(botConfig.modLogChannelId)?.sendMessage(modLogEmbed)?.complete()
 }
