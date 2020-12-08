@@ -41,7 +41,7 @@
 | RefreshRoles                                                   | <none>         | Refreshes the time-based roles                               |
 | RoleStatistics, RoleStat, RoleStats, RoleInformation, RoleInfo | (Role)         | Shows the number of users with a given role or all the roles |
 | Unban                                                          | User, (Text)   | Unbans someone in the guild                                  |
-| Warn                                                           | User, (Text)   | Warn an user                                                 |
+| Warn                                                           | Member, (Text) | Warn a member                                                |
 
 ## Statistics
 | Commands                        | Arguments                    | Description                                                                                   |

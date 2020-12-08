@@ -121,11 +121,11 @@ fun modCommands() = commands {
     }
 
     command("Warn") {
-        description = "Warn an user"
+        description = "Warn a member"
 
-        execute(UserArg, reasonArg) {
+        execute(MemberArg, reasonArg) {
             it.safe {
-                modLog(it.author.toMember(it.guild!!)!!, "Warned", it.args.first, it.args.second)
+                modLog(it.author.toMember(it.guild!!)!!, "Warned", it.args.first.getUser(), it.args.second)
             }
         }
     }
