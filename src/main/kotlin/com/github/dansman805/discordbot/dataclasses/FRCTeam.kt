@@ -44,6 +44,7 @@ data class FRCTeam(
 
     companion object {
         fun yearToSeason(year: Int): String = when (year) {
+            2021 -> "2021: Infinite Recharge 2: Electric Boogaloo"
             2020 -> "2020: Infinite Recharge"
             2019 -> "2019: Destination: Deep Space"
             2018 -> "2018: FIRST Power Up"

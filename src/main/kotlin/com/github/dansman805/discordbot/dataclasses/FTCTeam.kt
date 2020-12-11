@@ -45,6 +45,7 @@ data class FTCTeam(val team_key: String?,
 
     companion object {
         fun yearToSeason(year: Int): String = when (year) {
+            2021 -> "2020-2021: Ultimate Goal"
             2020 -> "2019-2020: Skystone"
             2019 -> "2018-2019: Rover Ruckus"
             2018 -> "2017-2018: Relic Recovery"
