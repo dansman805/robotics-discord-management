@@ -24,7 +24,6 @@ repositories {
     jcenter()
 
     maven { setUrl("https://jitpack.io") }
-    maven { setUrl("https://dl.bintray.com/s1m0nw1/KtsRunner") }
 }
 
 dependencies {
@@ -47,7 +46,6 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
     implementation("org.jsoup:jsoup:1.10.3")
-    implementation("de.swirtz:ktsRunner:0.0.8")
 
     implementation("me.liuwj.ktorm:ktorm-core:2.7.2")
 
